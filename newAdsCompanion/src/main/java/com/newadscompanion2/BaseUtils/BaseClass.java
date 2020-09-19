@@ -4356,8 +4356,16 @@ public class BaseClass extends AppCompatActivity {
     }
 
     public void checkAppService(String key, String appVersion) {
-        if (isNetworkAvailable(this) && checkAppService) {
-            runAppService(key, appVersion);
+        if (adsPrefernce.allowAccess()){
+            if (isNetworkAvailable(this) && checkAppService) {
+                runAppService(key, appVersion);
+            }
+        }else {
+            if (isvalidInstall){
+                if (isNetworkAvailable(this) && checkAppService) {
+                    runAppService(key, appVersion);
+                }
+            }
         }
     }
 
