@@ -1,0 +1,33 @@
+
+AD1 PLAN A- GOOGLE / FACEBOOK
+AD2 PLAN B-
+AD3 PLAN C-
+AD4 PLAN D- INMOBI
+AD5 PLAN E- IRON SOURCE
+AD6 PLAN F-
+
+
+
+
+
+TODO:
+2 Inter ads in onBackPressAds()--> Done (Check Pending)
+Rewarded Ads Coding
+Banner ads--> Done (Check Pending)
+Splash Ads coding--> Done (Check Pending)
+Consent Dialog ma iron source and inmobi add krvana 6--> Done
+
+
+
+REMINDER:
+INMOBI:
+Turn off Test mode before App is Live.
+
+V1.1.0:
+
+BANNER ADS:
+Load Banner Ads in onResume() mathod (required by ironsource sdk)
+Destroys ads on onPause and onDestroy of activity
+
+INTERSTITIAL ADS:
+showBackPressAds() --> showInter1AdonClosed() & showInter1AdonClosed()

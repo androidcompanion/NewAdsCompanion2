@@ -1,0 +1,3 @@
+include ':newAdsCompanion'
+include ':app'
+rootProject.name = "NewAdsCompanion2"
