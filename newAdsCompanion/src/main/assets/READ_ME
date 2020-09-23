@@ -23,11 +23,22 @@ REMINDER:
 INMOBI:
 Turn off Test mode before App is Live.
 
-V1.1.0:
+V1.1.1
+App Services side notification dialog not showing bug fixed
+Notification Dialog side multiple modification done
+Ads dialog side cancel button visibility set from server
+
+V1.1.0
+
+CheckAppService() side bug Fixed
+
+V1.0.0:
 
 BANNER ADS:
 Load Banner Ads in onResume() mathod (required by ironsource sdk)
 Destroys ads on onPause and onDestroy of activity
 
 INTERSTITIAL ADS:
-showBackPressAds() --> showInter1AdonClosed() & showInter1AdonClosed()
+showBackPressAds() --> showInter1AdonClosed() & showInter2AdonClosed()
+
+donClosed()
