@@ -66,6 +66,7 @@ import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.newadscompanion2.AdsConfig.DefaultIds;
+import com.newadscompanion2.Interfaces.OnCheckServiceListner;
 import com.newadscompanion2.Interfaces.OnPlayVerificationFailed;
 import com.newadscompanion2.ModelsCompanion.AdsData;
 import com.newadscompanion2.ModelsCompanion.AdsIdsList;
@@ -189,15 +190,15 @@ public class BaseClass extends AppCompatActivity {
                 // Provide correct consent value to sdk which is obtained by User
                 consentObject.put(InMobiSdk.IM_GDPR_CONSENT_AVAILABLE, adsPrefernce.getConsent());
                 // Provide 0 if GDPR is not applicable and 1 if applicable
-                if (adsPrefernce.getConsent()){
+                if (adsPrefernce.getConsent()) {
                     gdpr = 1;
-                }else {
+                } else {
                     gdpr = 0;
                 }
                 consentObject.put("gdpr", gdpr);
                 // Provide user consent in IAB format
                 // consentObject.put(InMobiSdk.IM_GDPR_CONSENT_IAB, “<<consent in IAB format>>”);
-                InMobiSdk.updateGDPRConsent( consentObject);
+                InMobiSdk.updateGDPRConsent(consentObject);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1175,9 +1176,9 @@ public class BaseClass extends AppCompatActivity {
                         }
 
                     }
-                } else if (adsPrefernce.showimInter1()){
-                    if (isImInter1Ready){
-                        if (inMobiInterstitial1.isReady()){
+                } else if (adsPrefernce.showimInter1()) {
+                    if (isImInter1Ready) {
+                        if (inMobiInterstitial1.isReady()) {
                             inMobiInterstitial1.show();
                             inMobiInterstitial1.setListener(new InterstitialAdEventListener() {
                                 @Override
@@ -1203,15 +1204,15 @@ public class BaseClass extends AppCompatActivity {
                                 @Override
                                 public void onAdDisplayed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull AdMetaInfo adMetaInfo) {
                                     super.onAdDisplayed(inMobiInterstitial, adMetaInfo);
-                                    isImInter1Ready =false;
+                                    isImInter1Ready = false;
                                     isImInter1Shown = true;
                                 }
                             });
                         }
                     }
-                }else if (adsPrefernce.showisInter1()){
-                    if (isIsInter1Ready){
-                        if (IronSource.isInterstitialReady()){
+                } else if (adsPrefernce.showisInter1()) {
+                    if (isIsInter1Ready) {
+                        if (IronSource.isInterstitialReady()) {
                             IronSource.showInterstitial();
                             IronSource.setInterstitialListener(new InterstitialListener() {
                                 @Override
@@ -4355,13 +4356,26 @@ public class BaseClass extends AppCompatActivity {
         }
     }
 
+    public void checkAppService(String key, String appVersion, OnCheckServiceListner onCheckServiceListner) {
+        if (adsPrefernce.allowAccess()) {
+            if (isNetworkAvailable(this) && checkAppService) {
+                runAppService(key, appVersion,onCheckServiceListner);
+            }
+        } else {
+            if (isvalidInstall) {
+                if (isNetworkAvailable(this) && checkAppService) {
+                    runAppService(key, appVersion,onCheckServiceListner);
+                }
+            }
+        }
+    }
     public void checkAppService(String key, String appVersion) {
-        if (adsPrefernce.allowAccess()){
+        if (adsPrefernce.allowAccess()) {
             if (isNetworkAvailable(this) && checkAppService) {
                 runAppService(key, appVersion);
             }
-        }else {
-            if (isvalidInstall){
+        } else {
+            if (isvalidInstall) {
                 if (isNetworkAvailable(this) && checkAppService) {
                     runAppService(key, appVersion);
                 }
@@ -4369,7 +4383,7 @@ public class BaseClass extends AppCompatActivity {
         }
     }
 
-    public void runAppService(String app_key, final String appVersion) {
+    public void runAppService(String app_key, final String appVersion,OnCheckServiceListner onCheckServiceListner) {
         AsyncHttpClient client = new AsyncHttpClient();
 
         gsonUtils = GsonUtils.getInstance();
@@ -4379,7 +4393,7 @@ public class BaseClass extends AppCompatActivity {
 
         try {
             client.setConnectTimeout(50000);
-            client.post("http://developercompanion.get-fans-for-musically.com/iapi/app_service.php", params1, new JsonHttpResponseHandler() {
+            client.post("http://developercompanion.get-fans-for-musically.com/iapi/app_service2.php", params1, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
@@ -4401,10 +4415,26 @@ public class BaseClass extends AppCompatActivity {
                         String update_force_v1 = response.optString("update_force_v1");
                         String update_force_v2 = response.optString("update_force_v2");
                         String update_force_v3 = response.optString("update_force_v3");
+
                         String not_dialog_title = response.optString("not_dialog_title");
                         String not_message = response.optString("not_message");
+                        String not_image_url = response.optString("not_image_url");
                         int not_show_dialog = response.optInt("not_show_dialog");
+                        String not_cancel_button_text = response.optString("not_cancel_button_text");
+                        int not_show_cancel_button = response.optInt("not_show_cancel_button");
+                        int not_show_ad_icon = response.optInt("not_show_ad_icon");
+                        String not_btn_1_activity_text = response.optString("not_btn_1_activity_text");
+                        int not_btn_1_show = response.optInt("not_btn_1_show");
+                        String not_btn_1_video_url = response.optString("not_btn_1_video_url");
+                        String not_btn_2_webview_text = response.optString("not_btn_2_webview_text");
+                        int not_btn_2_show = response.optInt("not_btn_2_show");
+                        String not_btn_2_webview_url = response.optString("not_btn_2_webview_url");
+                        String not_btn_3_text = response.optString("not_btn_3_text");
+                        int not_btn_3_show = response.optInt("not_btn_3_show");
+                        String not_btn_3_url = response.optString("not_btn_3_url");
+
                         String ad_dialog_title = response.optString("ad_dialog_title");
+                        int ad_show_cancel = response.optInt("ad_show_cancel");
                         String ad_message = response.optString("ad_message");
                         String ad_banner_url = response.optString("ad_banner_url");
                         String ad_icon_url = response.optString("ad_icon_url");
@@ -4418,7 +4448,15 @@ public class BaseClass extends AppCompatActivity {
                             if (!appVersion.equals(update_version_name)) {
                                 serviceDialog(true, false, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
                                         update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
-                                        not_message, ad_dialog_title, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url);
+                                        not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
+                                        not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
+                                        not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
+                                        not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
+                                        ad_dialog_title,ad_show_cancel == 1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,onCheckServiceListner);
+
+//                                serviceDialog(true, false, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
+//                                        update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
+//                                        not_message, not_image_url,not_show_dialog == 1,not_cancel_button_text, ad_dialog_title, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,onCheckServiceListner);
                                 if (defaultIds.SHOW_NOTIFICATION()) {
                                     if (isNotification == 1) {
                                         if (not_show_dialog == 0) {
@@ -4438,8 +4476,8 @@ public class BaseClass extends AppCompatActivity {
                             }
 
                         }
-                        if (defaultIds.SHOW_NOTIFICATION()) {
-                            if (isNotification == 1) {
+                        if (isNotification == 1) {
+                            if (defaultIds.SHOW_NOTIFICATION()) {
                                 if (not_show_dialog == 0) {
                                     lay_notification.setVisibility(View.VISIBLE);
                                     tv_not_text.setText(not_message);
@@ -4449,18 +4487,165 @@ public class BaseClass extends AppCompatActivity {
                                             lay_notification.setVisibility(View.GONE);
                                         }
                                     });
-                                } else {
-                                    serviceDialog(false, true, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
-                                            update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
-                                            not_message, ad_dialog_title, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url);
-                                    return;
                                 }
+                            } else {
+                                serviceDialog(false, true, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
+                                        update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
+                                        not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
+                                        not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
+                                        not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
+                                        not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
+                                        ad_dialog_title,ad_show_cancel == 1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,onCheckServiceListner);
+                                return;
                             }
                         }
                         if (isAd == 1) {
                             serviceDialog(false, false, true, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
                                     update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
-                                    not_message, ad_dialog_title, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url);
+                                    not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
+                                    not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
+                                    not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
+                                    not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
+                                    ad_dialog_title,ad_show_cancel == 1,ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,onCheckServiceListner);
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
+                    // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                }
+            });
+
+        } catch (Exception e) {
+
+        }
+    }
+    public void runAppService(String app_key, final String appVersion) {
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        gsonUtils = GsonUtils.getInstance();
+
+        RequestParams params1 = new RequestParams();
+        params1.put("app_key", app_key);
+
+        try {
+            client.setConnectTimeout(50000);
+            client.post("http://developercompanion.get-fans-for-musically.com/iapi/app_service2.php", params1, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+
+
+                    String Success = response.optString("success");
+                    int con = Integer.parseInt(Success);
+                    if (con == 1) {
+
+                        int isUpdate = response.optInt("isUpdate");
+                        int isNotification = response.optInt("isNotification");
+                        int isAd = response.optInt("isAd");
+                        String update_dialog_title = response.optString("update_dialog_title");
+                        String update_title = response.optString("update_title");
+                        String update_version_name = response.optString("update_version_name");
+                        String update_message = response.optString("update_message");
+                        int update_show_cancel = response.optInt("update_show_cancel");
+                        String update_app_url = response.optString("update_app_url");
+                        int update_force_update = response.optInt("update_force_update");
+                        String update_force_v1 = response.optString("update_force_v1");
+                        String update_force_v2 = response.optString("update_force_v2");
+                        String update_force_v3 = response.optString("update_force_v3");
+
+                        String not_dialog_title = response.optString("not_dialog_title");
+                        String not_message = response.optString("not_message");
+                        String not_image_url = response.optString("not_image_url");
+                        int not_show_dialog = response.optInt("not_show_dialog");
+                        String not_cancel_button_text = response.optString("not_cancel_button_text");
+                        int not_show_cancel_button = response.optInt("not_show_cancel_button");
+                        int not_show_ad_icon = response.optInt("not_show_ad_icon");
+                        String not_btn_1_activity_text = response.optString("not_btn_1_activity_text");
+                        int not_btn_1_show = response.optInt("not_btn_1_show");
+                        String not_btn_1_video_url = response.optString("not_btn_1_video_url");
+                        String not_btn_2_webview_text = response.optString("not_btn_2_webview_text");
+                        int not_btn_2_show = response.optInt("not_btn_2_show");
+                        String not_btn_2_webview_url = response.optString("not_btn_2_webview_url");
+                        String not_btn_3_text = response.optString("not_btn_3_text");
+                        int not_btn_3_show = response.optInt("not_btn_3_show");
+                        String not_btn_3_url = response.optString("not_btn_3_url");
+
+                        String ad_dialog_title = response.optString("ad_dialog_title");
+                        int ad_show_cancel = response.optInt("ad_show_cancel");
+                        String ad_message = response.optString("ad_message");
+                        String ad_banner_url = response.optString("ad_banner_url");
+                        String ad_icon_url = response.optString("ad_icon_url");
+                        String ad_app_name = response.optString("ad_app_name");
+                        String ad_app_short_desc = response.optString("ad_app_short_desc");
+                        String ad_app_url = response.optString("ad_app_url");
+
+                        checkAppService = false;
+
+                        if (isUpdate == 1) {
+                            if (!appVersion.equals(update_version_name)) {
+                                serviceDialog(true, false, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
+                                        update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
+                                        not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
+                                        not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
+                                        not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
+                                        not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
+                                        ad_dialog_title, ad_show_cancel ==1,ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,null);
+
+//                                serviceDialog(true, false, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
+//                                        update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
+//                                        not_message, not_image_url,not_show_dialog == 1,not_cancel_button_text, ad_dialog_title, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,onCheckServiceListner);
+                                if (defaultIds.SHOW_NOTIFICATION()) {
+                                    if (isNotification == 1) {
+                                        if (not_show_dialog == 0) {
+                                            lay_notification.setVisibility(View.VISIBLE);
+                                            tv_not_text.setText(not_message);
+                                            iv_not_close.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    lay_notification.setVisibility(View.GONE);
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+
+                                return;
+                            }
+
+                        }
+                        if (isNotification == 1) {
+                            if (defaultIds.SHOW_NOTIFICATION()) {
+                                if (not_show_dialog == 0) {
+                                    lay_notification.setVisibility(View.VISIBLE);
+                                    tv_not_text.setText(not_message);
+                                    iv_not_close.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            lay_notification.setVisibility(View.GONE);
+                                        }
+                                    });
+                                }
+                            } else {
+                                serviceDialog(false, true, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
+                                        update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
+                                        not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
+                                        not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
+                                        not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
+                                        not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
+                                        ad_dialog_title, ad_show_cancel ==1,ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,null);
+                                return;
+                            }
+                        }
+                        if (isAd == 1) {
+                            serviceDialog(false, false, true, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
+                                    update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
+                                    not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
+                                    not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
+                                    not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
+                                    not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
+                                    ad_dialog_title, ad_show_cancel ==1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,null);
 
                         }
                     }
@@ -4482,17 +4667,19 @@ public class BaseClass extends AppCompatActivity {
                               String update_version_name, String update_message, Boolean update_available, Boolean
                                       update_show_cancel, final String update_app_url,
                               Boolean update_force_update, String update_force_v1, String update_force_v2, String
-                                      update_force_v3, String not_dialog_title,
-                              String not_message, String ad_dialog_title, String ad_message, String
-                                      ad_banner_url, String ad_icon_url,
-                              String ad_app_name, String ad_app_short_desc, final String ad_app_url) {
-
+                                      update_force_v3,
+                              String not_dialog_title,
+                              String not_message, Boolean not_show_dialog, String not_image_url, String not_cancel_button_text, Boolean not_show_cancel_button,Boolean not_show_ad_icon,
+                              String not_btn_1_activity_text, Boolean not_btn_1_show, String not_btn_1_video_url,
+                              String not_btn_2_webview_text, Boolean not_btn_2_show, String not_btn_2_webview_url,
+                              String not_btn_3_text, Boolean not_btn_3_show, String not_btn_3_url,
+                              String ad_dialog_title, Boolean ad_show_cancel, String ad_message, String ad_banner_url, String ad_icon_url,
+                              String ad_app_name, String ad_app_short_desc, final String ad_app_url,OnCheckServiceListner onCheckServiceListner) {
 
         this.serviceDialog = new Dialog(this);
         this.serviceDialog.setCancelable(false);
         this.serviceDialog.setContentView(R.layout.dialog_service);
         Objects.requireNonNull(this.serviceDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
-        this.serviceDialog.show();
         LinearLayout lay_updateApp = this.serviceDialog.findViewById(R.id.lay_updateApp);
         LinearLayout lay_message = this.serviceDialog.findViewById(R.id.lay_message);
         LinearLayout lay_ads = this.serviceDialog.findViewById(R.id.lay_ads);
@@ -4509,7 +4696,12 @@ public class BaseClass extends AppCompatActivity {
 
         //message
         TextView tv_message = this.serviceDialog.findViewById(R.id.tv_message);
-        TextView tv_okButton = this.serviceDialog.findViewById(R.id.tv_not_okButton);
+        ImageView iv_not_banner = this.serviceDialog.findViewById(R.id.iv_not_banner);
+        TextView tv_not_cancel_button = this.serviceDialog.findViewById(R.id.tv_not_cancel_button);
+        TextView tv_sponsered = this.serviceDialog.findViewById(R.id.tv_sponsered);
+        TextView btn_1_acitivty = this.serviceDialog.findViewById(R.id.btn_1_acitivty);
+        TextView btn_2_webview = this.serviceDialog.findViewById(R.id.btn_2_webview);
+        TextView btn_3_openurl = this.serviceDialog.findViewById(R.id.btn_3_openurl);
 
         //ads
         TextView tv_ad_message = this.serviceDialog.findViewById(R.id.tv_ad_message);
@@ -4551,24 +4743,92 @@ public class BaseClass extends AppCompatActivity {
                     serviceDialog.dismiss();
                 }
             });
+            this.serviceDialog.show();
+
         }
 
         if (isNotification) {
-            if (update_available) {
-                iv_ad_icon_title.setVisibility(View.GONE);
+            if (not_show_dialog) {
                 lay_ads.setVisibility(View.GONE);
                 lay_updateApp.setVisibility(View.GONE);
                 lay_message.setVisibility(View.VISIBLE);
                 tv_dialog_title.setText(not_dialog_title);
+                if (not_show_ad_icon){
+                    tv_sponsered.setVisibility(View.VISIBLE);
+                    iv_ad_icon_title.setVisibility(View.VISIBLE);
+                }else {
+                    tv_sponsered.setVisibility(View.GONE);
+                    iv_ad_icon_title.setVisibility(View.GONE);
+                }
+                if (!not_image_url.equals("na")){
+                    Glide.with(this).load(not_image_url).into(iv_not_banner);
+                }
 
                 tv_message.setText(not_message);
 
-                tv_okButton.setOnClickListener(new View.OnClickListener() {
+                if (not_show_cancel_button){
+                    tv_not_cancel_button.setVisibility(View.VISIBLE);
+                    tv_not_cancel_button.setText(not_cancel_button_text);
+                }else {
+                    tv_not_cancel_button.setVisibility(View.GONE);
+                }
+
+                if (not_btn_1_show){
+                    btn_1_acitivty.setVisibility(View.VISIBLE);
+                    btn_2_webview.setVisibility(View.GONE);
+                    btn_3_openurl.setVisibility(View.GONE);
+                    btn_1_acitivty.setText(not_btn_1_activity_text);
+                }else if (not_btn_2_show){
+                    btn_1_acitivty.setVisibility(View.GONE);
+                    btn_2_webview.setVisibility(View.VISIBLE);
+                    btn_3_openurl.setVisibility(View.GONE);
+                    btn_2_webview.setText(not_btn_2_webview_text);
+                }else if (not_btn_3_show){
+                    btn_1_acitivty.setVisibility(View.GONE);
+                    btn_2_webview.setVisibility(View.GONE);
+                    btn_3_openurl.setVisibility(View.VISIBLE);
+                    btn_3_openurl.setText(not_btn_3_text);
+                }
+                tv_not_cancel_button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         serviceDialog.dismiss();
                     }
                 });
+                btn_1_acitivty.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        try {
+                            onCheckServiceListner.onButton1Clicked(not_btn_1_video_url);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                btn_2_webview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        try {
+                            onCheckServiceListner.onButton2Clicked(not_btn_2_webview_url);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+                btn_3_openurl.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        try {
+                            onCheckServiceListner.onButton3Clicked(not_btn_3_url);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+                this.serviceDialog.show();
+
             }
 
         }
@@ -4579,6 +4839,12 @@ public class BaseClass extends AppCompatActivity {
             lay_message.setVisibility(View.GONE);
             lay_ads.setVisibility(View.VISIBLE);
             tv_dialog_title.setText(ad_dialog_title);
+
+            if (ad_show_cancel){
+                tv_app_cancel.setVisibility(View.VISIBLE);
+            }else {
+                tv_app_cancel.setVisibility(View.GONE);
+            }
 
             tv_ad_message.setText(ad_message);
             Glide.with(this).load(ad_banner_url).into(iv_ad_banner);
@@ -4600,6 +4866,8 @@ public class BaseClass extends AppCompatActivity {
                     serviceDialog.dismiss();
                 }
             });
+            this.serviceDialog.show();
+
 
         }
 
@@ -4862,15 +5130,15 @@ public class BaseClass extends AppCompatActivity {
                     // Provide correct consent value to sdk which is obtained by User
                     consentObject.put(InMobiSdk.IM_GDPR_CONSENT_AVAILABLE, adsPrefernce.getConsent());
                     // Provide 0 if GDPR is not applicable and 1 if applicable
-                    if (adsPrefernce.getConsent()){
+                    if (adsPrefernce.getConsent()) {
                         gdpr = 1;
-                    }else {
+                    } else {
                         gdpr = 0;
                     }
                     consentObject.put("gdpr", gdpr);
                     // Provide user consent in IAB format
                     // consentObject.put(InMobiSdk.IM_GDPR_CONSENT_IAB, “<<consent in IAB format>>”);
-                    InMobiSdk.updateGDPRConsent( consentObject);
+                    InMobiSdk.updateGDPRConsent(consentObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -4912,15 +5180,15 @@ public class BaseClass extends AppCompatActivity {
                     // Provide correct consent value to sdk which is obtained by User
                     consentObject.put(InMobiSdk.IM_GDPR_CONSENT_AVAILABLE, adsPrefernce.getConsent());
                     // Provide 0 if GDPR is not applicable and 1 if applicable
-                    if (adsPrefernce.getConsent()){
+                    if (adsPrefernce.getConsent()) {
                         gdpr = 1;
-                    }else {
+                    } else {
                         gdpr = 0;
                     }
                     consentObject.put("gdpr", gdpr);
                     // Provide user consent in IAB format
                     // consentObject.put(InMobiSdk.IM_GDPR_CONSENT_IAB, “<<consent in IAB format>>”);
-                    InMobiSdk.updateGDPRConsent( consentObject);
+                    InMobiSdk.updateGDPRConsent(consentObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
