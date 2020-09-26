@@ -4908,154 +4908,6 @@ public class BaseClass extends AppCompatActivity {
         return com.google.android.gms.ads.AdSize.getPortraitAnchoredAdaptiveBannerAdSize(this, adWidth);
     }
 
-//    private void initializeMoPubSDK() {
-//
-//        if (!mpInter1Initilized) {
-//            if (adsPrefernce.showmpInter1()) {
-//                Log.e("Ads..", "Inside Init mp Inter 1");
-//                SdkConfiguration sdkConfiguration = new SdkConfiguration.Builder(adsPrefernce.mpInterId1())
-//                        .withLegitimateInterestAllowed(false)
-//                        .build();
-//                MoPub.initializeSdk(this, sdkConfiguration, initSdkListener());
-//            }
-//        } else if (!mpInter2Initilized) {
-//            Log.e("Ads..", "Inside Init mp Inter 2");
-//            SdkConfiguration sdkConfiguration = new SdkConfiguration.Builder(adsPrefernce.mpInterId2())
-//                    .withLegitimateInterestAllowed(false)
-//                    .build();
-//            MoPub.initializeSdk(this, sdkConfiguration, initSdkListener());
-//        } else if (!mpBannerInitilized) {
-//            Log.e("Ads..", "Inside Init mp Banner");
-//            SdkConfiguration sdkConfiguration = new SdkConfiguration.Builder(adsPrefernce.mpBannerId())
-//                    .withLegitimateInterestAllowed(false)
-//                    .build();
-//            MoPub.initializeSdk(this, sdkConfiguration, initSdkListener());
-//        }
-//
-//    }
-
-//    private SdkInitializationListener initSdkListener() {
-//        return new SdkInitializationListener() {
-//            @Override
-//            public void onInitializationFinished() {
-//                Log.e("Ads...", "onInitializationFinished");
-//
-//                if (!mpInter1Initilized) {
-//                    if (adsPrefernce.showmpInter1()) {
-//                        if (!isMpInter1Ready) {
-//                            Log.e("Ads...", "isMpInter1Ready false");
-//                            mpInterstitial1 = new MoPubInterstitial(BaseClass.this, adsPrefernce.mpInterId1());
-//                            mpInterstitial1.load();
-//                            mpInterstitial1.setInterstitialAdListener(new MoPubInterstitial.InterstitialAdListener() {
-//                                @Override
-//                                public void onInterstitialLoaded(MoPubInterstitial interstitial) {
-//                                    Log.e("Ads...", "isMpInter1Ready true");
-//                                    isMpInter1Ready = true;
-//                                }
-//
-//                                @Override
-//                                public void onInterstitialFailed(MoPubInterstitial interstitial, MoPubErrorCode errorCode) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onInterstitialShown(MoPubInterstitial interstitial) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onInterstitialClicked(MoPubInterstitial interstitial) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onInterstitialDismissed(MoPubInterstitial interstitial) {
-//
-//                                }
-//                            });
-//                            initializeMoPubSDK();
-//
-//                        } else if (!mpInter2Initilized) {
-//                            initializeMoPubSDK();
-//                        }
-//                    } else if (!mpInter2Initilized) {
-//                        initializeMoPubSDK();
-//                    }
-//                    mpInter1Initilized = true;
-//                } else if (!mpInter2Initilized) {
-//                    if (adsPrefernce.showmpInter2()) {
-//                        if (!isMpInter2Ready) {
-//                            mpInterstitial2 = new MoPubInterstitial(BaseClass.this, adsPrefernce.mpInterId2());
-//                            mpInterstitial2.load();
-//                            mpInterstitial2.setInterstitialAdListener(new MoPubInterstitial.InterstitialAdListener() {
-//                                @Override
-//                                public void onInterstitialLoaded(MoPubInterstitial interstitial) {
-//                                    isMpInter2Ready = true;
-//                                }
-//
-//                                @Override
-//                                public void onInterstitialFailed(MoPubInterstitial interstitial, MoPubErrorCode errorCode) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onInterstitialShown(MoPubInterstitial interstitial) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onInterstitialClicked(MoPubInterstitial interstitial) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onInterstitialDismissed(MoPubInterstitial interstitial) {
-//
-//                                }
-//                            });
-//                            if (!mpBannerInitilized) {
-//                                if (adsPrefernce.showmpBanner()) {
-//                                    initializeMoPubSDK();
-//                                }
-//                            }
-//
-//                        } else if (!mpBannerInitilized) {
-//                            if (adsPrefernce.showmpBanner()) {
-//                                initializeMoPubSDK();
-//                            }
-//                        }
-//
-//                    } else if (!mpBannerInitilized) {
-//                        if (adsPrefernce.showmpBanner()) {
-//                            initializeMoPubSDK();
-//                        }
-//                    }
-//                    mpInter2Initilized = true;
-//
-//                } else if (!mpBannerInitilized) {
-//                    mpBannerInitilized = true;
-//                }
-//
-//
-//            }
-//
-//        };
-//    }
-
-
-//    private SdkInitializationListener initSdkListenerBanner(Boolean loadOnInitilized) {
-//        return new SdkInitializationListener() {
-//            @Override
-//            public void onInitializationFinished() {
-//
-//                if (loadOnInitilized) {
-//
-//                }
-//
-//            }
-//        };
-//    }
-
     boolean verifyInstallerId(Context context) {
         // A list with valid installers package name
         List<String> validInstallers = new ArrayList<>(Arrays.asList("com.android.vending", "com.google.android.feedback"));
@@ -5117,7 +4969,7 @@ public class BaseClass extends AppCompatActivity {
             public void onClick(View view) {
                 consentDialog.dismiss();
                 adsPrefernce.setConsent(true);
-                adsPrefernce.setConsentShown();
+                adsPrefernce.setConsentShown(true);
 
                 // iron source user consent
                 IronSource.setConsent(adsPrefernce.getConsent());
@@ -5167,7 +5019,7 @@ public class BaseClass extends AppCompatActivity {
             public void onClick(View view) {
                 consentDialog.dismiss();
                 adsPrefernce.setConsent(false);
-                adsPrefernce.setConsentShown();
+                adsPrefernce.setConsentShown(true);
 
                 // iron source user consent
                 IronSource.setConsent(adsPrefernce.getConsent());

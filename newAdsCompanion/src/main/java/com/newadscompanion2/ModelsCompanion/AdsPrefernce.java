@@ -776,8 +776,8 @@ public class AdsPrefernce {
         return adsPreference.getBoolean("isConsentShown",false);
     }
 
-    public void setConsentShown() {
-         editor.putBoolean("isConsentShown",true);
+    public void setConsentShown(Boolean showStatus) {
+         editor.putBoolean("isConsentShown",showStatus);
          editor.apply();    }
 
     public void setConsent(Boolean userConsent) {
