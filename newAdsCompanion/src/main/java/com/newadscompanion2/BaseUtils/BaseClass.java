@@ -4010,7 +4010,7 @@ public class BaseClass extends AppCompatActivity {
                         }
 
                     } else if (adsPrefernce.planE()) {
-                        if (adsPrefernce.showisInter2()) {
+                        if (adsPrefernce.showisInter1()) {
                             if (IronSource.isInterstitialReady()) {
                                 IronSource.showInterstitial();
                                 IronSource.setInterstitialListener(new InterstitialListener() {
