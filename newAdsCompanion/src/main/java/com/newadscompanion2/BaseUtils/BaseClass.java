@@ -4010,7 +4010,68 @@ public class BaseClass extends AppCompatActivity {
                         }
 
                     } else if (adsPrefernce.planE()) {
+                        if (adsPrefernce.showisInter2()) {
+                            if (IronSource.isInterstitialReady()) {
+                                IronSource.showInterstitial();
+                                IronSource.setInterstitialListener(new InterstitialListener() {
+                                    @Override
+                                    public void onInterstitialAdReady() {
 
+                                    }
+
+                                    @Override
+                                    public void onInterstitialAdLoadFailed(IronSourceError ironSourceError) {
+
+                                    }
+
+                                    @Override
+                                    public void onInterstitialAdOpened() {
+
+                                    }
+
+                                    @Override
+                                    public void onInterstitialAdClosed() {
+                                        try {
+                                            methodParam.call();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onInterstitialAdShowSucceeded() {
+
+                                    }
+
+                                    @Override
+                                    public void onInterstitialAdShowFailed(IronSourceError ironSourceError) {
+                                        try {
+                                            methodParam.call();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onInterstitialAdClicked() {
+
+                                    }
+                                });
+                            } else {
+                                try {
+                                    methodParam.call();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }else {
+                            try {
+                                methodParam.call();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                     } else {
                         try {
                             methodParam.call();
