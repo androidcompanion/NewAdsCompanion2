@@ -1,9 +1,11 @@
 package com.newadscompanion2.BaseUtils;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -43,11 +45,17 @@ import com.facebook.ads.InterstitialAdListener;
 import com.facebook.ads.NativeAdLayout;
 import com.facebook.ads.NativeAdListener;
 import com.facebook.ads.NativeBannerAd;
+import com.facebook.ads.RewardedVideoAd;
+import com.facebook.ads.RewardedVideoAdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdCallback;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.inmobi.ads.AdMetaInfo;
 import com.inmobi.ads.InMobiAdRequestStatus;
@@ -60,7 +68,9 @@ import com.ironsource.mediationsdk.ISBannerSize;
 import com.ironsource.mediationsdk.IronSource;
 import com.ironsource.mediationsdk.IronSourceBannerLayout;
 import com.ironsource.mediationsdk.logger.IronSourceError;
+import com.ironsource.mediationsdk.model.Placement;
 import com.ironsource.mediationsdk.sdk.InterstitialListener;
+import com.ironsource.mediationsdk.sdk.RewardedVideoListener;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -80,6 +90,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
@@ -122,6 +133,31 @@ public class BaseClass extends AppCompatActivity {
     public InMobiInterstitial inMobiInterstitial11;
     public InMobiInterstitial inMobiInterstitial22;
 
+    //Rewarded Ads
+    public static RewardedAd gRewardedAd;
+    public static RewardedAdLoadCallback adLoadCallback;
+    public static RewardedVideoAd fbRewardedVideoAd;
+    public static RewardedVideoAdListener rewardedVideoAdListener;
+    public static InMobiInterstitial imRewardedAd;
+    public static InterstitialAdEventListener mRewardAdEventListener;
+    public static RewardedVideoListener isRewardedVideoListener;
+
+    public static boolean isGRewardedShown = false;
+    public static boolean isFbRewardedShown = false;
+    public static boolean isImRewardedShown = false;
+    public static boolean isIsRewardedShown = false;
+
+    public static boolean isGRewardedReady = false;
+    public static boolean isFbRewardedReady = false;
+    public static boolean isImRewardedReady = false;
+    public static boolean isIsRewardedReady = false;
+
+    public static boolean isGUserRewarded = false;
+    public static boolean isfbUserRewarded = false;
+    public static boolean isImUserRewarded = false;
+    public static boolean isIsUserRewarded = false;
+
+
     public static boolean mpInter1Initilized = false;
     private static boolean mpInter2Initilized = false;
 
@@ -131,6 +167,7 @@ public class BaseClass extends AppCompatActivity {
 
     public ProgressDialog progressDialog;
     OnPlayVerificationFailed onPlayVerificationFailed;
+
 
     public static boolean isGInter1Ready = false;
     public static boolean isFbInter1Ready = false;
@@ -169,6 +206,540 @@ public class BaseClass extends AppCompatActivity {
 
     public static boolean inMobiInitialized = false;
 
+    public void loadRewardAd() {
+        adsPrefernce = new AdsPrefernce(this);
+        if (isNetworkAvailable(this)) {
+            if (isAdsAvailable) {
+                Log.e("RewardAds...", "planA");
+                if (adsPrefernce.showgRewarded()) {
+                    Log.e("RewardAds...", "showgRewarded true");
+                    if (!isGRewardedReady) {
+                        Log.e("RewardAds...", "google1 not ready");
+                        MobileAds.initialize(getApplicationContext(), adsPrefernce.gAppId());
+                        gRewardedAd = new RewardedAd(this,
+                                adsPrefernce.gRewardedId());
+                        adLoadCallback = new RewardedAdLoadCallback() {
+                            @Override
+                            public void onRewardedAdLoaded() {
+                                isGRewardedReady = true;
+                                Log.e("RewardAds...", "google RewardAd ready");
+                            }
+
+                            @Override
+                            public void onRewardedAdFailedToLoad(LoadAdError adError) {
+                                isGRewardedReady = false;
+                            }
+                        };
+                        gRewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+                    }
+                }
+                if (adsPrefernce.showfbRewarded()) {
+                    if (!isFbRewardedReady) {
+                        AudienceNetworkAds.initialize(this);
+                        fbRewardedVideoAd = new RewardedVideoAd(this, adsPrefernce.fbRewardedId());
+                        rewardedVideoAdListener = new RewardedVideoAdListener() {
+                            @Override
+                            public void onError(Ad ad, AdError error) {
+                                // Rewarded video ad failed to load
+                                Log.e("RewardAds...", "Rewarded video ad failed to load: " + error.getErrorMessage());
+                                isFbRewardedReady = false;
+                            }
+
+                            @Override
+                            public void onAdLoaded(Ad ad) {
+                                // Rewarded video ad is loaded and ready to be displayed
+                                Log.d("RewardAds...", "Rewarded video ad is loaded and ready to be displayed!");
+                                isFbRewardedReady = true;
+                            }
+
+                            @Override
+                            public void onAdClicked(Ad ad) {
+                                // Rewarded video ad clicked
+                                Log.d("RewardAds...", "Rewarded video ad clicked!");
+                            }
+
+                            @Override
+                            public void onLoggingImpression(Ad ad) {
+                                // Rewarded Video ad impression - the event will fire when the
+                                // video starts playing
+                                Log.d("RewardAds...", "Rewarded video ad impression logged!");
+                            }
+
+                            @Override
+                            public void onRewardedVideoCompleted() {
+                                // Rewarded Video View Complete - the video has been played to the end.
+                                // You can use this event to initialize your reward
+                                Log.d("RewardAds...", "Rewarded video completed!");
+
+                                // Call method to give reward
+                                // giveReward();
+                            }
+
+                            @Override
+                            public void onRewardedVideoClosed() {
+                                // The Rewarded Video ad was closed - this can occur during the video
+                                // by closing the app, or closing the end card.
+                                Log.d("RewardAds...", "Rewarded video ad closed!");
+                            }
+                        };
+                        fbRewardedVideoAd.loadAd(
+                                fbRewardedVideoAd.buildLoadAdConfig()
+                                        .withAdListener(rewardedVideoAdListener)
+                                        .build());
+                    }
+                }
+                if (adsPrefernce.showimRewarded()) {
+                    if (!isImRewardedReady) {
+                        if (inMobiInitialized) {
+                            mRewardAdEventListener = new InterstitialAdEventListener() {
+                                @Override
+                                public void onAdFetchFailed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull InMobiAdRequestStatus inMobiAdRequestStatus) {
+                                    super.onAdFetchFailed(inMobiInterstitial, inMobiAdRequestStatus);
+                                    isImRewardedReady = false;
+                                }
+
+                                @Override
+                                public void onAdDisplayed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull AdMetaInfo adMetaInfo) {
+                                    super.onAdDisplayed(inMobiInterstitial, adMetaInfo);
+                                }
+
+                                @Override
+                                public void onAdDisplayFailed(@NonNull InMobiInterstitial inMobiInterstitial) {
+                                    super.onAdDisplayFailed(inMobiInterstitial);
+                                }
+
+                                @Override
+                                public void onAdDismissed(@NonNull InMobiInterstitial inMobiInterstitial) {
+                                    super.onAdDismissed(inMobiInterstitial);
+                                }
+
+                                @Override
+                                public void onRewardsUnlocked(@NonNull InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+                                    super.onRewardsUnlocked(inMobiInterstitial, map);
+                                }
+
+                                @Override
+                                public void onAdLoadSucceeded(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull AdMetaInfo adMetaInfo) {
+                                    super.onAdLoadSucceeded(inMobiInterstitial, adMetaInfo);
+                                    isImRewardedReady = true;
+                                }
+
+                                @Override
+                                public void onAdLoadFailed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull InMobiAdRequestStatus inMobiAdRequestStatus) {
+                                    super.onAdLoadFailed(inMobiInterstitial, inMobiAdRequestStatus);
+                                }
+                            };
+                            imRewardedAd = new InMobiInterstitial(this, Long.parseLong(defaultIds.IM_REWARDED()), mRewardAdEventListener);
+                            imRewardedAd.load();
+                        }
+
+                    }
+
+                }
+                if (adsPrefernce.showisRewarded()) {
+                    if (!isIsRewardedReady) {
+                        isRewardedVideoListener = new RewardedVideoListener() {
+                            @Override
+                            public void onRewardedVideoAdOpened() {
+
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdClosed() {
+
+                            }
+
+                            @Override
+                            public void onRewardedVideoAvailabilityChanged(boolean b) {
+                                isIsRewardedReady = IronSource.isRewardedVideoAvailable();
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdStarted() {
+
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdEnded() {
+
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdRewarded(Placement placement) {
+
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdShowFailed(IronSourceError ironSourceError) {
+
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdClicked(Placement placement) {
+
+                            }
+                        };
+                        IronSource.setRewardedVideoListener(isRewardedVideoListener);
+                        IronSource.init(this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
+
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void showRewardAds(Callable<Void> taskToPerform) {
+        if (isNetworkAvailable(this)) {
+            if (isAdsAvailable) {
+                if (adsPrefernce.showgRewarded()) {
+                    if (!isGRewardedShown) {
+                        if (isGRewardedReady) {
+                            if (gRewardedAd.isLoaded()) {
+                                Log.d("RewardAds...", "gRewardedAd.isLoaded() = true");
+                                RewardedAdCallback adCallback = new RewardedAdCallback() {
+                                    @Override
+                                    public void onRewardedAdOpened() {
+                                        // Ad opened.
+                                    }
+
+                                    @Override
+                                    public void onRewardedAdClosed() {
+                                        Log.d("RewardAds...", "onRewardedAdClosed Google");
+                                        // Ad closed.
+                                        if (isGUserRewarded) {
+                                            try {
+                                                taskToPerform.call();
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                            isGRewardedReady = false;
+                                            isGRewardedShown = true;
+                                            isGUserRewarded = false;
+                                            gRewardedAd = new RewardedAd(BaseClass.this,
+                                                    adsPrefernce.gRewardedId());
+                                            gRewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+                                        } else {
+                                            toast("Reward Failed, You didn't watch full video...");
+                                            isGRewardedReady = false;
+                                            isGRewardedShown = true;
+                                            isGUserRewarded = false;
+                                            gRewardedAd = new RewardedAd(BaseClass.this,
+                                                    adsPrefernce.gRewardedId());
+                                            gRewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onUserEarnedReward(@NonNull RewardItem reward) {
+                                        // User earned reward.
+                                        isGUserRewarded = true;
+                                        Log.d("RewardAds...", "onUserEarnedReward Google");
+
+                                    }
+
+                                    @Override
+                                    public void onRewardedAdFailedToShow(com.google.android.gms.ads.AdError adError) {
+                                        Log.d("RewardAds...", "onRewardedAdFailedToShow Google");
+                                        // Ad failed to display.
+                                        isGRewardedReady = false;
+                                        isGRewardedShown = true;
+                                        isGUserRewarded = false;
+                                        gRewardedAd = new RewardedAd(BaseClass.this,
+                                                adsPrefernce.gRewardedId());
+                                        gRewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+                                    }
+                                };
+                                gRewardedAd.show(this, adCallback);
+                            }
+                        } else {
+                            goToPlanA2Rewarded(taskToPerform);
+                        }
+                    } else {
+                        goToPlanA2Rewarded(taskToPerform);
+                    }
+                } else {
+                    goToPlanA2Rewarded(taskToPerform);
+                }
+            }
+        }
+
+    }
+
+    public void goToPlanA2Rewarded(Callable<Void> taskToPerform) {
+        if (adsPrefernce.showfbRewarded()) {
+            if (!isFbRewardedShown) {
+                if (isFbRewardedReady) {
+                    if (fbRewardedVideoAd == null || !fbRewardedVideoAd.isAdLoaded()) {
+                        goToPlanDRewarded(taskToPerform);
+                        return;
+                    }
+                    // Check if ad is already expired or invalidated, and do not show ad if that is the case. You will not get paid to show an invalidated ad.
+                    if (fbRewardedVideoAd.isAdInvalidated()) {
+                        goToPlanDRewarded(taskToPerform);
+                        return;
+                    }
+                    fbRewardedVideoAd.show();
+                    RewardedVideoAdListener rewardedVideoAdListenerShow = new RewardedVideoAdListener() {
+                        @Override
+                        public void onError(Ad ad, AdError error) {
+                            // Rewarded video ad failed to load
+                            Log.e("RewardAds...", "Rewarded video ad failed to load: " + error.getErrorMessage());
+                            isFbRewardedReady = false;
+                            isFbBannerShown = true;
+                            isfbUserRewarded = false;
+                            fbRewardedVideoAd = new RewardedVideoAd(BaseClass.this, adsPrefernce.fbRewardedId());
+                            fbRewardedVideoAd.loadAd(
+                                    fbRewardedVideoAd.buildLoadAdConfig()
+                                            .withAdListener(rewardedVideoAdListener)
+                                            .build());
+                        }
+
+                        @Override
+                        public void onAdLoaded(Ad ad) {
+                            // Rewarded video ad is loaded and ready to be displayed
+                            Log.d("RewardAds...", "Rewarded video ad is loaded and ready to be displayed!");
+                        }
+
+                        @Override
+                        public void onAdClicked(Ad ad) {
+                            // Rewarded video ad clicked
+                            Log.d("RewardAds...", "Rewarded video ad clicked!");
+                        }
+
+                        @Override
+                        public void onLoggingImpression(Ad ad) {
+                            // Rewarded Video ad impression - the event will fire when the
+                            // video starts playing
+                            Log.d("RewardAds...", "Rewarded video ad impression logged!");
+                        }
+
+                        @Override
+                        public void onRewardedVideoCompleted() {
+                            // Rewarded Video View Complete - the video has been played to the end.
+                            // You can use this event to initialize your reward
+                            Log.d("RewardAds...", "Rewarded video completed!");
+                            isfbUserRewarded = true;
+
+                            // Call method to give reward
+                            // giveReward();
+                        }
+
+                        @Override
+                        public void onRewardedVideoClosed() {
+                            // The Rewarded Video ad was closed - this can occur during the video
+                            // by closing the app, or closing the end card.
+                            Log.d("RewardAds...", "Rewarded video ad closed!");
+                            if (isfbUserRewarded) {
+                                try {
+                                    taskToPerform.call();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                isFbRewardedReady = false;
+                                isFbRewardedShown = true;
+                                isfbUserRewarded = false;
+                                fbRewardedVideoAd = new RewardedVideoAd(BaseClass.this, adsPrefernce.fbRewardedId());
+                                fbRewardedVideoAd.loadAd(
+                                        fbRewardedVideoAd.buildLoadAdConfig()
+                                                .withAdListener(rewardedVideoAdListener)
+                                                .build());
+                            } else {
+                                toast("Reward Failed, You didn't watch full video...");
+                                isFbRewardedReady = false;
+                                isFbRewardedShown = true;
+                                isfbUserRewarded = false;
+                                fbRewardedVideoAd = new RewardedVideoAd(BaseClass.this, adsPrefernce.fbRewardedId());
+                                fbRewardedVideoAd.loadAd(
+                                        fbRewardedVideoAd.buildLoadAdConfig()
+                                                .withAdListener(rewardedVideoAdListener)
+                                                .build());
+                            }
+
+                        }
+                    };
+                    fbRewardedVideoAd.setAdListener(rewardedVideoAdListenerShow);
+
+                } else {
+                    goToPlanDRewarded(taskToPerform);
+                }
+            } else {
+                goToPlanDRewarded(taskToPerform);
+            }
+        } else {
+            goToPlanDRewarded(taskToPerform);
+        }
+    }
+
+    public void goToPlanDRewarded(Callable<Void> taskToPerform) {
+
+        if (adsPrefernce.showimRewarded()) {
+            if (!isImRewardedShown) {
+                if (isImRewardedReady) {
+                    if (imRewardedAd.isReady()) {
+                        imRewardedAd.show();
+                        imRewardedAd.setListener(new InterstitialAdEventListener() {
+                            @Override
+                            public void onAdFetchFailed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull InMobiAdRequestStatus inMobiAdRequestStatus) {
+                                super.onAdFetchFailed(inMobiInterstitial, inMobiAdRequestStatus);
+                                isImRewardedReady = false;
+                            }
+
+                            @Override
+                            public void onAdDisplayed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull AdMetaInfo adMetaInfo) {
+                                super.onAdDisplayed(inMobiInterstitial, adMetaInfo);
+                            }
+
+                            @Override
+                            public void onAdDisplayFailed(@NonNull InMobiInterstitial inMobiInterstitial) {
+                                super.onAdDisplayFailed(inMobiInterstitial);
+                                isImRewardedReady = false;
+                                isImRewardedShown = true;
+                                isImUserRewarded = false;
+                                imRewardedAd = new InMobiInterstitial(BaseClass.this, Long.parseLong(defaultIds.IM_REWARDED()), mRewardAdEventListener);
+                                imRewardedAd.load();
+                            }
+
+                            @Override
+                            public void onAdDismissed(@NonNull InMobiInterstitial inMobiInterstitial) {
+                                super.onAdDismissed(inMobiInterstitial);
+                                if (isImUserRewarded) {
+                                    try {
+                                        taskToPerform.call();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    isImRewardedReady = false;
+                                    isImRewardedShown = true;
+                                    isImUserRewarded = false;
+                                    imRewardedAd = new InMobiInterstitial(BaseClass.this, Long.parseLong(defaultIds.IM_REWARDED()), mRewardAdEventListener);
+                                    imRewardedAd.load();
+                                } else {
+                                    toast("Reward Failed, You didn't watch full video...");
+                                    isImRewardedReady = false;
+                                    isImRewardedShown = true;
+                                    isImUserRewarded = false;
+                                    imRewardedAd = new InMobiInterstitial(BaseClass.this, Long.parseLong(defaultIds.IM_REWARDED()), mRewardAdEventListener);
+                                    imRewardedAd.load();
+                                }
+                            }
+
+                            @Override
+                            public void onRewardsUnlocked(@NonNull InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+                                super.onRewardsUnlocked(inMobiInterstitial, map);
+                                isImUserRewarded = true;
+                            }
+
+                        });
+                    } else {
+                        goToPlanERewarded(taskToPerform);
+                    }
+                } else {
+                    goToPlanERewarded(taskToPerform);
+                }
+            } else {
+                goToPlanERewarded(taskToPerform);
+            }
+        } else {
+            goToPlanERewarded(taskToPerform);
+        }
+
+    }
+
+    public void goToPlanERewarded(Callable<Void> taskToPerform) {
+        if (adsPrefernce.showisRewarded()) {
+            if (!isIsInter1Shown) {
+                if (isIsInter1Ready) {
+                    if (IronSource.isRewardedVideoAvailable()) {
+                        IronSource.showRewardedVideo();
+                        IronSource.setRewardedVideoListener(new RewardedVideoListener() {
+                            @Override
+                            public void onRewardedVideoAdOpened() {
+
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdClosed() {
+                                if (isIsUserRewarded) {
+                                    try {
+                                        taskToPerform.call();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    isIsRewardedReady = false;
+                                    isIsRewardedShown = true;
+                                    isIsUserRewarded = false;
+                                    IronSource.setRewardedVideoListener(isRewardedVideoListener);
+                                    IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
+                                    resetAllRewardedShownBoolean();
+                                } else {
+                                    toast("Reward Failed, You didn't watch full video...");
+                                    isIsRewardedReady = false;
+                                    isIsRewardedShown = true;
+                                    isIsUserRewarded = false;
+                                    IronSource.setRewardedVideoListener(isRewardedVideoListener);
+                                    IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
+                                    resetAllRewardedShownBoolean();
+                                }
+                            }
+
+                            @Override
+                            public void onRewardedVideoAvailabilityChanged(boolean b) {
+
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdStarted() {
+
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdEnded() {
+
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdRewarded(Placement placement) {
+                                isIsUserRewarded = true;
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdShowFailed(IronSourceError ironSourceError) {
+                                isIsRewardedReady = false;
+                                isIsRewardedShown = true;
+                                isIsUserRewarded = false;
+                                IronSource.setRewardedVideoListener(isRewardedVideoListener);
+                                IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
+                                resetAllRewardedShownBoolean();
+                            }
+
+                            @Override
+                            public void onRewardedVideoAdClicked(Placement placement) {
+
+                            }
+                        });
+                    } else {
+                        resetAllRewardedShownBoolean();
+                    }
+                } else {
+                    resetAllRewardedShownBoolean();
+                }
+            } else {
+                resetAllRewardedShownBoolean();
+            }
+        } else {
+            resetAllRewardedShownBoolean();
+        }
+
+    }
+
+    public void resetAllRewardedShownBoolean() {
+        isGRewardedShown = false;
+        isFbRewardedShown = false;
+        isImRewardedShown = false;
+        isIsRewardedShown = false;
+    }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -177,6 +748,7 @@ public class BaseClass extends AppCompatActivity {
         defaultIds = new DefaultIds(this);
         adsPrefernce = new AdsPrefernce(this);
 
+        loadRewardAd();
         isvalidInstall = verifyInstallerId(this);
         Log.e("validation", String.valueOf(isvalidInstall));
 
@@ -255,6 +827,7 @@ public class BaseClass extends AppCompatActivity {
         RequestParams params1 = new RequestParams();
         params1.put("app_key", appKey);
         try {
+
             client.setConnectTimeout(50000);
 
             client.post("http://developercompanion.get-fans-for-musically.com/iapi/ads_service2.php", params1, new BaseJsonHttpResponseHandler<AdsData>() {
@@ -267,6 +840,8 @@ public class BaseClass extends AppCompatActivity {
                     adsList = new ArrayList<>();
 
                     if (response.getSuccess() == 0) {
+                        Log.e("Ads...", "Success = 0");
+
                         isAdsAvailable = true;
                         if (adsPrefernce.isMediationActive()) {
                             loadMixedInterAds();
@@ -275,6 +850,7 @@ public class BaseClass extends AppCompatActivity {
                     }
 
                     adsList.addAll(response.getAdsIdsList());
+                    Log.e("Ads...", "Success = 1");
 
 
                     AdsIdsList ads = adsList.get(0);
@@ -349,6 +925,7 @@ public class BaseClass extends AppCompatActivity {
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, AdsData errorResponse) {
                     isAdsAvailable = false;
 
+
                 }
 
                 @Override
@@ -366,6 +943,7 @@ public class BaseClass extends AppCompatActivity {
             });
 
         } catch (Exception ignored) {
+            toast("calling get ads in catch...");
 
         }
 
@@ -3108,6 +3686,7 @@ public class BaseClass extends AppCompatActivity {
 
     }
 
+
     public void loadInterstitial1() {
         adsPrefernce = new AdsPrefernce(this);
         if (isNetworkAvailable(this)) {
@@ -4065,7 +4644,7 @@ public class BaseClass extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                             }
-                        }else {
+                        } else {
                             try {
                                 methodParam.call();
                             } catch (Exception e) {
@@ -4420,16 +4999,17 @@ public class BaseClass extends AppCompatActivity {
     public void checkAppService(String key, String appVersion, OnCheckServiceListner onCheckServiceListner) {
         if (adsPrefernce.allowAccess()) {
             if (isNetworkAvailable(this) && checkAppService) {
-                runAppService(key, appVersion,onCheckServiceListner);
+                runAppService(key, appVersion, onCheckServiceListner);
             }
         } else {
             if (isvalidInstall) {
                 if (isNetworkAvailable(this) && checkAppService) {
-                    runAppService(key, appVersion,onCheckServiceListner);
+                    runAppService(key, appVersion, onCheckServiceListner);
                 }
             }
         }
     }
+
     public void checkAppService(String key, String appVersion) {
         if (adsPrefernce.allowAccess()) {
             if (isNetworkAvailable(this) && checkAppService) {
@@ -4444,7 +5024,7 @@ public class BaseClass extends AppCompatActivity {
         }
     }
 
-    public void runAppService(String app_key, final String appVersion,OnCheckServiceListner onCheckServiceListner) {
+    public void runAppService(String app_key, final String appVersion, OnCheckServiceListner onCheckServiceListner) {
         AsyncHttpClient client = new AsyncHttpClient();
 
         gsonUtils = GsonUtils.getInstance();
@@ -4509,11 +5089,11 @@ public class BaseClass extends AppCompatActivity {
                             if (!appVersion.equals(update_version_name)) {
                                 serviceDialog(true, false, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
                                         update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
-                                        not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
-                                        not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
-                                        not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
-                                        not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
-                                        ad_dialog_title,ad_show_cancel == 1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,onCheckServiceListner);
+                                        not_message, not_show_dialog == 1, not_image_url, not_cancel_button_text, not_show_cancel_button == 1, not_show_ad_icon == 1,
+                                        not_btn_1_activity_text, not_btn_1_show == 1, not_btn_1_video_url,
+                                        not_btn_2_webview_text, not_btn_2_show == 1, not_btn_2_webview_url,
+                                        not_btn_3_text, not_btn_3_show == 1, not_btn_3_url,
+                                        ad_dialog_title, ad_show_cancel == 1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url, onCheckServiceListner);
 
 //                                serviceDialog(true, false, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
 //                                        update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
@@ -4552,22 +5132,22 @@ public class BaseClass extends AppCompatActivity {
                             } else {
                                 serviceDialog(false, true, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
                                         update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
-                                        not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
-                                        not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
-                                        not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
-                                        not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
-                                        ad_dialog_title,ad_show_cancel == 1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,onCheckServiceListner);
+                                        not_message, not_show_dialog == 1, not_image_url, not_cancel_button_text, not_show_cancel_button == 1, not_show_ad_icon == 1,
+                                        not_btn_1_activity_text, not_btn_1_show == 1, not_btn_1_video_url,
+                                        not_btn_2_webview_text, not_btn_2_show == 1, not_btn_2_webview_url,
+                                        not_btn_3_text, not_btn_3_show == 1, not_btn_3_url,
+                                        ad_dialog_title, ad_show_cancel == 1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url, onCheckServiceListner);
                                 return;
                             }
                         }
                         if (isAd == 1) {
                             serviceDialog(false, false, true, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
                                     update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
-                                    not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
-                                    not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
-                                    not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
-                                    not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
-                                    ad_dialog_title,ad_show_cancel == 1,ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,onCheckServiceListner);
+                                    not_message, not_show_dialog == 1, not_image_url, not_cancel_button_text, not_show_cancel_button == 1, not_show_ad_icon == 1,
+                                    not_btn_1_activity_text, not_btn_1_show == 1, not_btn_1_video_url,
+                                    not_btn_2_webview_text, not_btn_2_show == 1, not_btn_2_webview_url,
+                                    not_btn_3_text, not_btn_3_show == 1, not_btn_3_url,
+                                    ad_dialog_title, ad_show_cancel == 1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url, onCheckServiceListner);
 
                         }
                     }
@@ -4583,6 +5163,7 @@ public class BaseClass extends AppCompatActivity {
 
         }
     }
+
     public void runAppService(String app_key, final String appVersion) {
         AsyncHttpClient client = new AsyncHttpClient();
 
@@ -4648,11 +5229,11 @@ public class BaseClass extends AppCompatActivity {
                             if (!appVersion.equals(update_version_name)) {
                                 serviceDialog(true, false, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
                                         update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
-                                        not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
-                                        not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
-                                        not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
-                                        not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
-                                        ad_dialog_title, ad_show_cancel ==1,ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,null);
+                                        not_message, not_show_dialog == 1, not_image_url, not_cancel_button_text, not_show_cancel_button == 1, not_show_ad_icon == 1,
+                                        not_btn_1_activity_text, not_btn_1_show == 1, not_btn_1_video_url,
+                                        not_btn_2_webview_text, not_btn_2_show == 1, not_btn_2_webview_url,
+                                        not_btn_3_text, not_btn_3_show == 1, not_btn_3_url,
+                                        ad_dialog_title, ad_show_cancel == 1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url, null);
 
 //                                serviceDialog(true, false, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
 //                                        update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
@@ -4691,22 +5272,22 @@ public class BaseClass extends AppCompatActivity {
                             } else {
                                 serviceDialog(false, true, false, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
                                         update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
-                                        not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
-                                        not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
-                                        not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
-                                        not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
-                                        ad_dialog_title, ad_show_cancel ==1,ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,null);
+                                        not_message, not_show_dialog == 1, not_image_url, not_cancel_button_text, not_show_cancel_button == 1, not_show_ad_icon == 1,
+                                        not_btn_1_activity_text, not_btn_1_show == 1, not_btn_1_video_url,
+                                        not_btn_2_webview_text, not_btn_2_show == 1, not_btn_2_webview_url,
+                                        not_btn_3_text, not_btn_3_show == 1, not_btn_3_url,
+                                        ad_dialog_title, ad_show_cancel == 1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url, null);
                                 return;
                             }
                         }
                         if (isAd == 1) {
                             serviceDialog(false, false, true, update_dialog_title, update_title, update_version_name, update_message, not_show_dialog == 1,
                                     update_show_cancel == 1, update_app_url, update_force_update == 1, update_force_v1, update_force_v2, update_force_v3, not_dialog_title,
-                                    not_message, not_show_dialog == 1,not_image_url,not_cancel_button_text, not_show_cancel_button ==1, not_show_ad_icon == 1,
-                                    not_btn_1_activity_text,not_btn_1_show==1,not_btn_1_video_url,
-                                    not_btn_2_webview_text,not_btn_2_show==1,not_btn_2_webview_url,
-                                    not_btn_3_text,not_btn_3_show==1,not_btn_3_url,
-                                    ad_dialog_title, ad_show_cancel ==1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url,null);
+                                    not_message, not_show_dialog == 1, not_image_url, not_cancel_button_text, not_show_cancel_button == 1, not_show_ad_icon == 1,
+                                    not_btn_1_activity_text, not_btn_1_show == 1, not_btn_1_video_url,
+                                    not_btn_2_webview_text, not_btn_2_show == 1, not_btn_2_webview_url,
+                                    not_btn_3_text, not_btn_3_show == 1, not_btn_3_url,
+                                    ad_dialog_title, ad_show_cancel == 1, ad_message, ad_banner_url, ad_icon_url, ad_app_name, ad_app_short_desc, ad_app_url, null);
 
                         }
                     }
@@ -4730,12 +5311,12 @@ public class BaseClass extends AppCompatActivity {
                               Boolean update_force_update, String update_force_v1, String update_force_v2, String
                                       update_force_v3,
                               String not_dialog_title,
-                              String not_message, Boolean not_show_dialog, String not_image_url, String not_cancel_button_text, Boolean not_show_cancel_button,Boolean not_show_ad_icon,
+                              String not_message, Boolean not_show_dialog, String not_image_url, String not_cancel_button_text, Boolean not_show_cancel_button, Boolean not_show_ad_icon,
                               String not_btn_1_activity_text, Boolean not_btn_1_show, String not_btn_1_video_url,
                               String not_btn_2_webview_text, Boolean not_btn_2_show, String not_btn_2_webview_url,
                               String not_btn_3_text, Boolean not_btn_3_show, String not_btn_3_url,
                               String ad_dialog_title, Boolean ad_show_cancel, String ad_message, String ad_banner_url, String ad_icon_url,
-                              String ad_app_name, String ad_app_short_desc, final String ad_app_url,OnCheckServiceListner onCheckServiceListner) {
+                              String ad_app_name, String ad_app_short_desc, final String ad_app_url, OnCheckServiceListner onCheckServiceListner) {
 
         this.serviceDialog = new Dialog(this);
         this.serviceDialog.setCancelable(false);
@@ -4814,37 +5395,37 @@ public class BaseClass extends AppCompatActivity {
                 lay_updateApp.setVisibility(View.GONE);
                 lay_message.setVisibility(View.VISIBLE);
                 tv_dialog_title.setText(not_dialog_title);
-                if (not_show_ad_icon){
+                if (not_show_ad_icon) {
                     tv_sponsered.setVisibility(View.VISIBLE);
                     iv_ad_icon_title.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     tv_sponsered.setVisibility(View.GONE);
                     iv_ad_icon_title.setVisibility(View.GONE);
                 }
-                if (!not_image_url.equals("na")){
+                if (!not_image_url.equals("na")) {
                     Glide.with(this).load(not_image_url).into(iv_not_banner);
                 }
 
                 tv_message.setText(not_message);
 
-                if (not_show_cancel_button){
+                if (not_show_cancel_button) {
                     tv_not_cancel_button.setVisibility(View.VISIBLE);
                     tv_not_cancel_button.setText(not_cancel_button_text);
-                }else {
+                } else {
                     tv_not_cancel_button.setVisibility(View.GONE);
                 }
 
-                if (not_btn_1_show){
+                if (not_btn_1_show) {
                     btn_1_acitivty.setVisibility(View.VISIBLE);
                     btn_2_webview.setVisibility(View.GONE);
                     btn_3_openurl.setVisibility(View.GONE);
                     btn_1_acitivty.setText(not_btn_1_activity_text);
-                }else if (not_btn_2_show){
+                } else if (not_btn_2_show) {
                     btn_1_acitivty.setVisibility(View.GONE);
                     btn_2_webview.setVisibility(View.VISIBLE);
                     btn_3_openurl.setVisibility(View.GONE);
                     btn_2_webview.setText(not_btn_2_webview_text);
-                }else if (not_btn_3_show){
+                } else if (not_btn_3_show) {
                     btn_1_acitivty.setVisibility(View.GONE);
                     btn_2_webview.setVisibility(View.GONE);
                     btn_3_openurl.setVisibility(View.VISIBLE);
@@ -4901,9 +5482,9 @@ public class BaseClass extends AppCompatActivity {
             lay_ads.setVisibility(View.VISIBLE);
             tv_dialog_title.setText(ad_dialog_title);
 
-            if (ad_show_cancel){
+            if (ad_show_cancel) {
                 tv_app_cancel.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 tv_app_cancel.setVisibility(View.GONE);
             }
 
@@ -4927,12 +5508,33 @@ public class BaseClass extends AppCompatActivity {
                     serviceDialog.dismiss();
                 }
             });
-            this.serviceDialog.show();
+            String link=ad_app_url;
+            String[] s1 = link.split("id=");
+            String[] s2 = s1[1].split("&");
+            String app_id = s2[0].toString();
+            Log.e("app_id_get",app_id);
+            if (!appInstalledOrNot(app_id)){
+                this.serviceDialog.show();
+            }
 
+            Log.e("app_id_installed",String.valueOf(appInstalledOrNot(app_id)));
 
         }
 
     }
+
+    public boolean appInstalledOrNot(String uri) {
+        PackageManager pm = getPackageManager();
+        boolean app_installed;
+        try {
+            pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+            app_installed = true;
+        } catch (PackageManager.NameNotFoundException e) {
+            app_installed = false;
+        }
+        return app_installed;
+    }
+
 
     public void hideStatusBar() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -4968,6 +5570,154 @@ public class BaseClass extends AppCompatActivity {
 
         return com.google.android.gms.ads.AdSize.getPortraitAnchoredAdaptiveBannerAdSize(this, adWidth);
     }
+
+//    private void initializeMoPubSDK() {
+//
+//        if (!mpInter1Initilized) {
+//            if (adsPrefernce.showmpInter1()) {
+//                Log.e("Ads..", "Inside Init mp Inter 1");
+//                SdkConfiguration sdkConfiguration = new SdkConfiguration.Builder(adsPrefernce.mpInterId1())
+//                        .withLegitimateInterestAllowed(false)
+//                        .build();
+//                MoPub.initializeSdk(this, sdkConfiguration, initSdkListener());
+//            }
+//        } else if (!mpInter2Initilized) {
+//            Log.e("Ads..", "Inside Init mp Inter 2");
+//            SdkConfiguration sdkConfiguration = new SdkConfiguration.Builder(adsPrefernce.mpInterId2())
+//                    .withLegitimateInterestAllowed(false)
+//                    .build();
+//            MoPub.initializeSdk(this, sdkConfiguration, initSdkListener());
+//        } else if (!mpBannerInitilized) {
+//            Log.e("Ads..", "Inside Init mp Banner");
+//            SdkConfiguration sdkConfiguration = new SdkConfiguration.Builder(adsPrefernce.mpBannerId())
+//                    .withLegitimateInterestAllowed(false)
+//                    .build();
+//            MoPub.initializeSdk(this, sdkConfiguration, initSdkListener());
+//        }
+//
+//    }
+
+//    private SdkInitializationListener initSdkListener() {
+//        return new SdkInitializationListener() {
+//            @Override
+//            public void onInitializationFinished() {
+//                Log.e("Ads...", "onInitializationFinished");
+//
+//                if (!mpInter1Initilized) {
+//                    if (adsPrefernce.showmpInter1()) {
+//                        if (!isMpInter1Ready) {
+//                            Log.e("Ads...", "isMpInter1Ready false");
+//                            mpInterstitial1 = new MoPubInterstitial(BaseClass.this, adsPrefernce.mpInterId1());
+//                            mpInterstitial1.load();
+//                            mpInterstitial1.setInterstitialAdListener(new MoPubInterstitial.InterstitialAdListener() {
+//                                @Override
+//                                public void onInterstitialLoaded(MoPubInterstitial interstitial) {
+//                                    Log.e("Ads...", "isMpInter1Ready true");
+//                                    isMpInter1Ready = true;
+//                                }
+//
+//                                @Override
+//                                public void onInterstitialFailed(MoPubInterstitial interstitial, MoPubErrorCode errorCode) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onInterstitialShown(MoPubInterstitial interstitial) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onInterstitialClicked(MoPubInterstitial interstitial) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onInterstitialDismissed(MoPubInterstitial interstitial) {
+//
+//                                }
+//                            });
+//                            initializeMoPubSDK();
+//
+//                        } else if (!mpInter2Initilized) {
+//                            initializeMoPubSDK();
+//                        }
+//                    } else if (!mpInter2Initilized) {
+//                        initializeMoPubSDK();
+//                    }
+//                    mpInter1Initilized = true;
+//                } else if (!mpInter2Initilized) {
+//                    if (adsPrefernce.showmpInter2()) {
+//                        if (!isMpInter2Ready) {
+//                            mpInterstitial2 = new MoPubInterstitial(BaseClass.this, adsPrefernce.mpInterId2());
+//                            mpInterstitial2.load();
+//                            mpInterstitial2.setInterstitialAdListener(new MoPubInterstitial.InterstitialAdListener() {
+//                                @Override
+//                                public void onInterstitialLoaded(MoPubInterstitial interstitial) {
+//                                    isMpInter2Ready = true;
+//                                }
+//
+//                                @Override
+//                                public void onInterstitialFailed(MoPubInterstitial interstitial, MoPubErrorCode errorCode) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onInterstitialShown(MoPubInterstitial interstitial) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onInterstitialClicked(MoPubInterstitial interstitial) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onInterstitialDismissed(MoPubInterstitial interstitial) {
+//
+//                                }
+//                            });
+//                            if (!mpBannerInitilized) {
+//                                if (adsPrefernce.showmpBanner()) {
+//                                    initializeMoPubSDK();
+//                                }
+//                            }
+//
+//                        } else if (!mpBannerInitilized) {
+//                            if (adsPrefernce.showmpBanner()) {
+//                                initializeMoPubSDK();
+//                            }
+//                        }
+//
+//                    } else if (!mpBannerInitilized) {
+//                        if (adsPrefernce.showmpBanner()) {
+//                            initializeMoPubSDK();
+//                        }
+//                    }
+//                    mpInter2Initilized = true;
+//
+//                } else if (!mpBannerInitilized) {
+//                    mpBannerInitilized = true;
+//                }
+//
+//
+//            }
+//
+//        };
+//    }
+
+
+//    private SdkInitializationListener initSdkListenerBanner(Boolean loadOnInitilized) {
+//        return new SdkInitializationListener() {
+//            @Override
+//            public void onInitializationFinished() {
+//
+//                if (loadOnInitilized) {
+//
+//                }
+//
+//            }
+//        };
+//    }
 
     boolean verifyInstallerId(Context context) {
         // A list with valid installers package name

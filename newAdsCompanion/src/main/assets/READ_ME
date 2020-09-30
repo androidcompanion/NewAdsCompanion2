@@ -12,16 +12,39 @@ AD6 PLAN F-
 
 TODO:
 2 Inter ads in onBackPressAds()--> Done (Check Pending)
-Rewarded Ads Coding
+Rewarded Ads Coding--> Done (Plan A B C D E ignored dowesnt matter on reward ads)
 Banner ads--> Done (Check Pending)
 Splash Ads coding--> Done (Check Pending)
 Consent Dialog ma iron source and inmobi add krvana 6--> Done
+Native Ads
+Is OfferWall--> End (Not Loading in test so work Pending)
+
+
+
+
+
+
 
 
 
 REMINDER:
 INMOBI:
 Turn off Test mode before App is Live.
+
+Reward Ads:
+Plan Selection on server doesn't matter in Reward Ads
+
+Banner Ads:
+Plan Selection on server doesn't matter in Reward Ads(IN MEDIATION)
+
+V1.1.6
+Reward Ads coding done working fine ( Plan Selection on server doesn't matter in Reward Ads)
+App Ads Service side if app is already installed the Ads Dialog wont show.
+
+
+V1.1.5
+Notiifcation Dialog Modifies with Direct Url Open , Web View and link Open Functionallity.
+Iron Source Inter1 Coding done working ok( Forgot to do isinter1 coding in previous version)
 
 V1.1.2
 App Services side notification dialog not showing bug fixed
@@ -41,4 +64,5 @@ Destroys ads on onPause and onDestroy of activity
 INTERSTITIAL ADS:
 showBackPressAds() --> showInter1AdonClosed() & showInter2AdonClosed()
 
-donClosed()
+
+

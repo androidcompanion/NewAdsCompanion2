@@ -53,3 +53,5 @@
     @android.webkit.JavascriptInterface <methods>;
 }
 
+-keep public class com.newadscompanion2.ModelsCompanion.AdsData {*;}
+-keep public class com.newadscompanion2.ModelsCompanion.AdsIdsList {*;}

@@ -16,7 +16,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -37,7 +37,7 @@ dependencies {
 
 
     //startapp
-//    implementation 'com.startapp:inapp-sdk:4.6.0'
+    //implementation 'com.startapp:inapp-sdk:4.6.0'
 
     // facebook
     implementation 'com.facebook.android:audience-network-sdk:5.11.0'
@@ -57,6 +57,9 @@ dependencies {
     //iron source
     implementation 'com.ironsource.sdk:mediationsdk:7.0.1.1'
 
+    //iron source offerwall
+//    implementation 'com.supersonic.sdk:mediationsdk:6.4.21@jar'
+
     // inmobi
     implementation 'com.inmobi.monetization:inmobi-ads:9.0.9'
     implementation 'androidx.browser:browser:1.2.0'
@@ -69,5 +72,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'com.android.support:multidex:1.0.3'
+
+
 
 }
