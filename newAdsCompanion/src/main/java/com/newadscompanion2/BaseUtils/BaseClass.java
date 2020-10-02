@@ -78,6 +78,7 @@ import com.loopj.android.http.RequestParams;
 import com.newadscompanion2.AdsConfig.DefaultIds;
 import com.newadscompanion2.Interfaces.OnCheckServiceListner;
 import com.newadscompanion2.Interfaces.OnPlayVerificationFailed;
+import com.newadscompanion2.Interfaces.OnRewardAdClosedListener;
 import com.newadscompanion2.ModelsCompanion.AdsData;
 import com.newadscompanion2.ModelsCompanion.AdsIdsList;
 import com.newadscompanion2.ModelsCompanion.AdsPrefernce;
@@ -167,6 +168,7 @@ public class BaseClass extends AppCompatActivity {
 
     public ProgressDialog progressDialog;
     OnPlayVerificationFailed onPlayVerificationFailed;
+    OnRewardAdClosedListener onRewardAdClosedListener;
 
 
     public static boolean isGInter1Ready = false;
@@ -389,7 +391,7 @@ public class BaseClass extends AppCompatActivity {
 
     }
 
-    public void showRewardAds(Callable<Void> taskToPerform) {
+    public void showRewardAds(OnRewardAdClosedListener onRewardAdClosedListener) {
         if (isNetworkAvailable(this)) {
             if (isAdsAvailable) {
                 if (adsPrefernce.showgRewarded()) {
@@ -409,7 +411,7 @@ public class BaseClass extends AppCompatActivity {
                                         // Ad closed.
                                         if (isGUserRewarded) {
                                             try {
-                                                taskToPerform.call();
+                                                onRewardAdClosedListener.onRewardSuccess();
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
@@ -420,7 +422,11 @@ public class BaseClass extends AppCompatActivity {
                                                     adsPrefernce.gRewardedId());
                                             gRewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
                                         } else {
-                                            toast("Reward Failed, You didn't watch full video...");
+                                            try {
+                                                onRewardAdClosedListener.onRewardFailed();
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
                                             isGRewardedReady = false;
                                             isGRewardedShown = true;
                                             isGUserRewarded = false;
@@ -453,30 +459,30 @@ public class BaseClass extends AppCompatActivity {
                                 gRewardedAd.show(this, adCallback);
                             }
                         } else {
-                            goToPlanA2Rewarded(taskToPerform);
+                            goToPlanA2Rewarded(onRewardAdClosedListener);
                         }
                     } else {
-                        goToPlanA2Rewarded(taskToPerform);
+                        goToPlanA2Rewarded(onRewardAdClosedListener);
                     }
                 } else {
-                    goToPlanA2Rewarded(taskToPerform);
+                    goToPlanA2Rewarded(onRewardAdClosedListener);
                 }
             }
         }
 
     }
 
-    public void goToPlanA2Rewarded(Callable<Void> taskToPerform) {
+    public void goToPlanA2Rewarded(OnRewardAdClosedListener onRewardAdClosedListener) {
         if (adsPrefernce.showfbRewarded()) {
             if (!isFbRewardedShown) {
                 if (isFbRewardedReady) {
                     if (fbRewardedVideoAd == null || !fbRewardedVideoAd.isAdLoaded()) {
-                        goToPlanDRewarded(taskToPerform);
+                        goToPlanDRewarded(onRewardAdClosedListener);
                         return;
                     }
                     // Check if ad is already expired or invalidated, and do not show ad if that is the case. You will not get paid to show an invalidated ad.
                     if (fbRewardedVideoAd.isAdInvalidated()) {
-                        goToPlanDRewarded(taskToPerform);
+                        goToPlanDRewarded(onRewardAdClosedListener);
                         return;
                     }
                     fbRewardedVideoAd.show();
@@ -532,7 +538,7 @@ public class BaseClass extends AppCompatActivity {
                             Log.d("RewardAds...", "Rewarded video ad closed!");
                             if (isfbUserRewarded) {
                                 try {
-                                    taskToPerform.call();
+                                    onRewardAdClosedListener.onRewardSuccess();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -545,7 +551,11 @@ public class BaseClass extends AppCompatActivity {
                                                 .withAdListener(rewardedVideoAdListener)
                                                 .build());
                             } else {
-                                toast("Reward Failed, You didn't watch full video...");
+                                try {
+                                    onRewardAdClosedListener.onRewardFailed();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 isFbRewardedReady = false;
                                 isFbRewardedShown = true;
                                 isfbUserRewarded = false;
@@ -561,17 +571,17 @@ public class BaseClass extends AppCompatActivity {
                     fbRewardedVideoAd.setAdListener(rewardedVideoAdListenerShow);
 
                 } else {
-                    goToPlanDRewarded(taskToPerform);
+                    goToPlanDRewarded(onRewardAdClosedListener);
                 }
             } else {
-                goToPlanDRewarded(taskToPerform);
+                goToPlanDRewarded(onRewardAdClosedListener);
             }
         } else {
-            goToPlanDRewarded(taskToPerform);
+            goToPlanDRewarded(onRewardAdClosedListener);
         }
     }
 
-    public void goToPlanDRewarded(Callable<Void> taskToPerform) {
+    public void goToPlanDRewarded(OnRewardAdClosedListener onRewardAdClosedListener) {
 
         if (adsPrefernce.showimRewarded()) {
             if (!isImRewardedShown) {
@@ -605,7 +615,7 @@ public class BaseClass extends AppCompatActivity {
                                 super.onAdDismissed(inMobiInterstitial);
                                 if (isImUserRewarded) {
                                     try {
-                                        taskToPerform.call();
+                                        onRewardAdClosedListener.onRewardSuccess();
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -615,7 +625,11 @@ public class BaseClass extends AppCompatActivity {
                                     imRewardedAd = new InMobiInterstitial(BaseClass.this, Long.parseLong(defaultIds.IM_REWARDED()), mRewardAdEventListener);
                                     imRewardedAd.load();
                                 } else {
-                                    toast("Reward Failed, You didn't watch full video...");
+                                    try {
+                                        onRewardAdClosedListener.onRewardFailed();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                     isImRewardedReady = false;
                                     isImRewardedShown = true;
                                     isImUserRewarded = false;
@@ -632,21 +646,21 @@ public class BaseClass extends AppCompatActivity {
 
                         });
                     } else {
-                        goToPlanERewarded(taskToPerform);
+                        goToPlanERewarded(onRewardAdClosedListener);
                     }
                 } else {
-                    goToPlanERewarded(taskToPerform);
+                    goToPlanERewarded(onRewardAdClosedListener);
                 }
             } else {
-                goToPlanERewarded(taskToPerform);
+                goToPlanERewarded(onRewardAdClosedListener);
             }
         } else {
-            goToPlanERewarded(taskToPerform);
+            goToPlanERewarded(onRewardAdClosedListener);
         }
 
     }
 
-    public void goToPlanERewarded(Callable<Void> taskToPerform) {
+    public void goToPlanERewarded(OnRewardAdClosedListener onRewardAdClosedListener) {
         if (adsPrefernce.showisRewarded()) {
             if (!isIsInter1Shown) {
                 if (isIsInter1Ready) {
@@ -662,7 +676,7 @@ public class BaseClass extends AppCompatActivity {
                             public void onRewardedVideoAdClosed() {
                                 if (isIsUserRewarded) {
                                     try {
-                                        taskToPerform.call();
+                                        onRewardAdClosedListener.onRewardSuccess();
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -673,7 +687,11 @@ public class BaseClass extends AppCompatActivity {
                                     IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
                                     resetAllRewardedShownBoolean();
                                 } else {
-                                    toast("Reward Failed, You didn't watch full video...");
+                                    try {
+                                        onRewardAdClosedListener.onRewardFailed();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                     isIsRewardedReady = false;
                                     isIsRewardedShown = true;
                                     isIsUserRewarded = false;
@@ -739,6 +757,557 @@ public class BaseClass extends AppCompatActivity {
         isImRewardedShown = false;
         isIsRewardedShown = false;
     }
+
+
+//    public void loadRewardAd() {
+//        adsPrefernce = new AdsPrefernce(this);
+//        if (isNetworkAvailable(this)) {
+//            if (isAdsAvailable) {
+//                Log.e("RewardAds...", "planA");
+//                if (adsPrefernce.showgRewarded()) {
+//                    Log.e("RewardAds...", "showgRewarded true");
+//                    if (!isGRewardedReady) {
+//                        Log.e("RewardAds...", "google1 not ready");
+//                        MobileAds.initialize(getApplicationContext(), adsPrefernce.gAppId());
+//                        gRewardedAd = new RewardedAd(this,
+//                                adsPrefernce.gRewardedId());
+//                        adLoadCallback = new RewardedAdLoadCallback() {
+//                            @Override
+//                            public void onRewardedAdLoaded() {
+//                                isGRewardedReady = true;
+//                                Log.e("RewardAds...", "google RewardAd ready");
+//                            }
+//
+//                            @Override
+//                            public void onRewardedAdFailedToLoad(LoadAdError adError) {
+//                                isGRewardedReady = false;
+//                            }
+//                        };
+//                        gRewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+//                    }
+//                }
+//                if (adsPrefernce.showfbRewarded()) {
+//                    if (!isFbRewardedReady) {
+//                        AudienceNetworkAds.initialize(this);
+//                        fbRewardedVideoAd = new RewardedVideoAd(this, adsPrefernce.fbRewardedId());
+//                        rewardedVideoAdListener = new RewardedVideoAdListener() {
+//                            @Override
+//                            public void onError(Ad ad, AdError error) {
+//                                // Rewarded video ad failed to load
+//                                Log.e("RewardAds...", "Rewarded video ad failed to load: " + error.getErrorMessage());
+//                                isFbRewardedReady = false;
+//                            }
+//
+//                            @Override
+//                            public void onAdLoaded(Ad ad) {
+//                                // Rewarded video ad is loaded and ready to be displayed
+//                                Log.d("RewardAds...", "Rewarded video ad is loaded and ready to be displayed!");
+//                                isFbRewardedReady = true;
+//                            }
+//
+//                            @Override
+//                            public void onAdClicked(Ad ad) {
+//                                // Rewarded video ad clicked
+//                                Log.d("RewardAds...", "Rewarded video ad clicked!");
+//                            }
+//
+//                            @Override
+//                            public void onLoggingImpression(Ad ad) {
+//                                // Rewarded Video ad impression - the event will fire when the
+//                                // video starts playing
+//                                Log.d("RewardAds...", "Rewarded video ad impression logged!");
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoCompleted() {
+//                                // Rewarded Video View Complete - the video has been played to the end.
+//                                // You can use this event to initialize your reward
+//                                Log.d("RewardAds...", "Rewarded video completed!");
+//
+//                                // Call method to give reward
+//                                // giveReward();
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoClosed() {
+//                                // The Rewarded Video ad was closed - this can occur during the video
+//                                // by closing the app, or closing the end card.
+//                                Log.d("RewardAds...", "Rewarded video ad closed!");
+//                            }
+//                        };
+//                        fbRewardedVideoAd.loadAd(
+//                                fbRewardedVideoAd.buildLoadAdConfig()
+//                                        .withAdListener(rewardedVideoAdListener)
+//                                        .build());
+//                    }
+//                }
+//                if (adsPrefernce.showimRewarded()) {
+//                    if (!isImRewardedReady) {
+//                        if (inMobiInitialized) {
+//                            mRewardAdEventListener = new InterstitialAdEventListener() {
+//                                @Override
+//                                public void onAdFetchFailed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull InMobiAdRequestStatus inMobiAdRequestStatus) {
+//                                    super.onAdFetchFailed(inMobiInterstitial, inMobiAdRequestStatus);
+//                                    isImRewardedReady = false;
+//                                }
+//
+//                                @Override
+//                                public void onAdDisplayed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull AdMetaInfo adMetaInfo) {
+//                                    super.onAdDisplayed(inMobiInterstitial, adMetaInfo);
+//                                }
+//
+//                                @Override
+//                                public void onAdDisplayFailed(@NonNull InMobiInterstitial inMobiInterstitial) {
+//                                    super.onAdDisplayFailed(inMobiInterstitial);
+//                                }
+//
+//                                @Override
+//                                public void onAdDismissed(@NonNull InMobiInterstitial inMobiInterstitial) {
+//                                    super.onAdDismissed(inMobiInterstitial);
+//                                }
+//
+//                                @Override
+//                                public void onRewardsUnlocked(@NonNull InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+//                                    super.onRewardsUnlocked(inMobiInterstitial, map);
+//                                }
+//
+//                                @Override
+//                                public void onAdLoadSucceeded(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull AdMetaInfo adMetaInfo) {
+//                                    super.onAdLoadSucceeded(inMobiInterstitial, adMetaInfo);
+//                                    isImRewardedReady = true;
+//                                }
+//
+//                                @Override
+//                                public void onAdLoadFailed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull InMobiAdRequestStatus inMobiAdRequestStatus) {
+//                                    super.onAdLoadFailed(inMobiInterstitial, inMobiAdRequestStatus);
+//                                }
+//                            };
+//                            imRewardedAd = new InMobiInterstitial(this, Long.parseLong(defaultIds.IM_REWARDED()), mRewardAdEventListener);
+//                            imRewardedAd.load();
+//                        }
+//
+//                    }
+//
+//                }
+//                if (adsPrefernce.showisRewarded()) {
+//                    if (!isIsRewardedReady) {
+//                        isRewardedVideoListener = new RewardedVideoListener() {
+//                            @Override
+//                            public void onRewardedVideoAdOpened() {
+//
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdClosed() {
+//
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAvailabilityChanged(boolean b) {
+//                                isIsRewardedReady = IronSource.isRewardedVideoAvailable();
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdStarted() {
+//
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdEnded() {
+//
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdRewarded(Placement placement) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdShowFailed(IronSourceError ironSourceError) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdClicked(Placement placement) {
+//
+//                            }
+//                        };
+//                        IronSource.setRewardedVideoListener(isRewardedVideoListener);
+//                        IronSource.init(this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
+//
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
+//
+//    public void showRewardAds(Callable<Void> taskToPerform,Callable<Void> taskIfNotRewarded) {
+//        if (isNetworkAvailable(this)) {
+//            if (isAdsAvailable) {
+//                if (adsPrefernce.showgRewarded()) {
+//                    if (!isGRewardedShown) {
+//                        if (isGRewardedReady) {
+//                            if (gRewardedAd.isLoaded()) {
+//                                Log.d("RewardAds...", "gRewardedAd.isLoaded() = true");
+//                                RewardedAdCallback adCallback = new RewardedAdCallback() {
+//                                    @Override
+//                                    public void onRewardedAdOpened() {
+//                                        // Ad opened.
+//                                    }
+//
+//                                    @Override
+//                                    public void onRewardedAdClosed() {
+//                                        Log.d("RewardAds...", "onRewardedAdClosed Google");
+//                                        // Ad closed.
+//                                        if (isGUserRewarded) {
+//                                            try {
+//                                                taskToPerform.call();
+//                                            } catch (Exception e) {
+//                                                e.printStackTrace();
+//                                            }
+//                                            isGRewardedReady = false;
+//                                            isGRewardedShown = true;
+//                                            isGUserRewarded = false;
+//                                            gRewardedAd = new RewardedAd(BaseClass.this,
+//                                                    adsPrefernce.gRewardedId());
+//                                            gRewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+//                                        } else {
+//                                            try {
+//                                                taskIfNotRewarded.call();
+//                                            } catch (Exception e) {
+//                                                e.printStackTrace();
+//                                            }
+//                                            isGRewardedReady = false;
+//                                            isGRewardedShown = true;
+//                                            isGUserRewarded = false;
+//                                            gRewardedAd = new RewardedAd(BaseClass.this,
+//                                                    adsPrefernce.gRewardedId());
+//                                            gRewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+//                                        }
+//                                    }
+//
+//                                    @Override
+//                                    public void onUserEarnedReward(@NonNull RewardItem reward) {
+//                                        // User earned reward.
+//                                        isGUserRewarded = true;
+//                                        Log.d("RewardAds...", "onUserEarnedReward Google");
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onRewardedAdFailedToShow(com.google.android.gms.ads.AdError adError) {
+//                                        Log.d("RewardAds...", "onRewardedAdFailedToShow Google");
+//                                        // Ad failed to display.
+//                                        isGRewardedReady = false;
+//                                        isGRewardedShown = true;
+//                                        isGUserRewarded = false;
+//                                        gRewardedAd = new RewardedAd(BaseClass.this,
+//                                                adsPrefernce.gRewardedId());
+//                                        gRewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+//                                    }
+//                                };
+//                                gRewardedAd.show(this, adCallback);
+//                            }
+//                        } else {
+//                            goToPlanA2Rewarded(taskToPerform,taskIfNotRewarded);
+//                        }
+//                    } else {
+//                        goToPlanA2Rewarded(taskToPerform,taskIfNotRewarded);
+//                    }
+//                } else {
+//                    goToPlanA2Rewarded(taskToPerform,taskIfNotRewarded);
+//                }
+//            }
+//        }
+//
+//    }
+//
+//    public void goToPlanA2Rewarded(Callable<Void> taskToPerform,Callable<Void> taskIfNotRewarded) {
+//        if (adsPrefernce.showfbRewarded()) {
+//            if (!isFbRewardedShown) {
+//                if (isFbRewardedReady) {
+//                    if (fbRewardedVideoAd == null || !fbRewardedVideoAd.isAdLoaded()) {
+//                        goToPlanDRewarded(taskToPerform,taskIfNotRewarded);
+//                        return;
+//                    }
+//                    // Check if ad is already expired or invalidated, and do not show ad if that is the case. You will not get paid to show an invalidated ad.
+//                    if (fbRewardedVideoAd.isAdInvalidated()) {
+//                        goToPlanDRewarded(taskToPerform,taskIfNotRewarded);
+//                        return;
+//                    }
+//                    fbRewardedVideoAd.show();
+//                    RewardedVideoAdListener rewardedVideoAdListenerShow = new RewardedVideoAdListener() {
+//                        @Override
+//                        public void onError(Ad ad, AdError error) {
+//                            // Rewarded video ad failed to load
+//                            Log.e("RewardAds...", "Rewarded video ad failed to load: " + error.getErrorMessage());
+//                            isFbRewardedReady = false;
+//                            isFbBannerShown = true;
+//                            isfbUserRewarded = false;
+//                            fbRewardedVideoAd = new RewardedVideoAd(BaseClass.this, adsPrefernce.fbRewardedId());
+//                            fbRewardedVideoAd.loadAd(
+//                                    fbRewardedVideoAd.buildLoadAdConfig()
+//                                            .withAdListener(rewardedVideoAdListener)
+//                                            .build());
+//                        }
+//
+//                        @Override
+//                        public void onAdLoaded(Ad ad) {
+//                            // Rewarded video ad is loaded and ready to be displayed
+//                            Log.d("RewardAds...", "Rewarded video ad is loaded and ready to be displayed!");
+//                        }
+//
+//                        @Override
+//                        public void onAdClicked(Ad ad) {
+//                            // Rewarded video ad clicked
+//                            Log.d("RewardAds...", "Rewarded video ad clicked!");
+//                        }
+//
+//                        @Override
+//                        public void onLoggingImpression(Ad ad) {
+//                            // Rewarded Video ad impression - the event will fire when the
+//                            // video starts playing
+//                            Log.d("RewardAds...", "Rewarded video ad impression logged!");
+//                        }
+//
+//                        @Override
+//                        public void onRewardedVideoCompleted() {
+//                            // Rewarded Video View Complete - the video has been played to the end.
+//                            // You can use this event to initialize your reward
+//                            Log.d("RewardAds...", "Rewarded video completed!");
+//                            isfbUserRewarded = true;
+//
+//                            // Call method to give reward
+//                            // giveReward();
+//                        }
+//
+//                        @Override
+//                        public void onRewardedVideoClosed() {
+//                            // The Rewarded Video ad was closed - this can occur during the video
+//                            // by closing the app, or closing the end card.
+//                            Log.d("RewardAds...", "Rewarded video ad closed!");
+//                            if (isfbUserRewarded) {
+//                                try {
+//                                    taskToPerform.call();
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
+//                                isFbRewardedReady = false;
+//                                isFbRewardedShown = true;
+//                                isfbUserRewarded = false;
+//                                fbRewardedVideoAd = new RewardedVideoAd(BaseClass.this, adsPrefernce.fbRewardedId());
+//                                fbRewardedVideoAd.loadAd(
+//                                        fbRewardedVideoAd.buildLoadAdConfig()
+//                                                .withAdListener(rewardedVideoAdListener)
+//                                                .build());
+//                            } else {
+//                                try {
+//                                    taskIfNotRewarded.call();
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
+//                                isFbRewardedReady = false;
+//                                isFbRewardedShown = true;
+//                                isfbUserRewarded = false;
+//                                fbRewardedVideoAd = new RewardedVideoAd(BaseClass.this, adsPrefernce.fbRewardedId());
+//                                fbRewardedVideoAd.loadAd(
+//                                        fbRewardedVideoAd.buildLoadAdConfig()
+//                                                .withAdListener(rewardedVideoAdListener)
+//                                                .build());
+//                            }
+//
+//                        }
+//                    };
+//                    fbRewardedVideoAd.setAdListener(rewardedVideoAdListenerShow);
+//
+//                } else {
+//                    goToPlanDRewarded(taskToPerform,taskIfNotRewarded);
+//                }
+//            } else {
+//                goToPlanDRewarded(taskToPerform,taskIfNotRewarded);
+//            }
+//        } else {
+//            goToPlanDRewarded(taskToPerform,taskIfNotRewarded);
+//        }
+//    }
+//
+//    public void goToPlanDRewarded(Callable<Void> taskToPerform,Callable<Void> taskIfNotRewarded) {
+//
+//        if (adsPrefernce.showimRewarded()) {
+//            if (!isImRewardedShown) {
+//                if (isImRewardedReady) {
+//                    if (imRewardedAd.isReady()) {
+//                        imRewardedAd.show();
+//                        imRewardedAd.setListener(new InterstitialAdEventListener() {
+//                            @Override
+//                            public void onAdFetchFailed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull InMobiAdRequestStatus inMobiAdRequestStatus) {
+//                                super.onAdFetchFailed(inMobiInterstitial, inMobiAdRequestStatus);
+//                                isImRewardedReady = false;
+//                            }
+//
+//                            @Override
+//                            public void onAdDisplayed(@NonNull InMobiInterstitial inMobiInterstitial, @NonNull AdMetaInfo adMetaInfo) {
+//                                super.onAdDisplayed(inMobiInterstitial, adMetaInfo);
+//                            }
+//
+//                            @Override
+//                            public void onAdDisplayFailed(@NonNull InMobiInterstitial inMobiInterstitial) {
+//                                super.onAdDisplayFailed(inMobiInterstitial);
+//                                isImRewardedReady = false;
+//                                isImRewardedShown = true;
+//                                isImUserRewarded = false;
+//                                imRewardedAd = new InMobiInterstitial(BaseClass.this, Long.parseLong(defaultIds.IM_REWARDED()), mRewardAdEventListener);
+//                                imRewardedAd.load();
+//                            }
+//
+//                            @Override
+//                            public void onAdDismissed(@NonNull InMobiInterstitial inMobiInterstitial) {
+//                                super.onAdDismissed(inMobiInterstitial);
+//                                if (isImUserRewarded) {
+//                                    try {
+//                                        taskToPerform.call();
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    isImRewardedReady = false;
+//                                    isImRewardedShown = true;
+//                                    isImUserRewarded = false;
+//                                    imRewardedAd = new InMobiInterstitial(BaseClass.this, Long.parseLong(defaultIds.IM_REWARDED()), mRewardAdEventListener);
+//                                    imRewardedAd.load();
+//                                } else {
+//                                    try {
+//                                        taskIfNotRewarded.call();
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    isImRewardedReady = false;
+//                                    isImRewardedShown = true;
+//                                    isImUserRewarded = false;
+//                                    imRewardedAd = new InMobiInterstitial(BaseClass.this, Long.parseLong(defaultIds.IM_REWARDED()), mRewardAdEventListener);
+//                                    imRewardedAd.load();
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onRewardsUnlocked(@NonNull InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+//                                super.onRewardsUnlocked(inMobiInterstitial, map);
+//                                isImUserRewarded = true;
+//                            }
+//
+//                        });
+//                    } else {
+//                        goToPlanERewarded(taskToPerform,taskIfNotRewarded);
+//                    }
+//                } else {
+//                    goToPlanERewarded(taskToPerform,taskIfNotRewarded);
+//                }
+//            } else {
+//                goToPlanERewarded(taskToPerform,taskIfNotRewarded);
+//            }
+//        } else {
+//            goToPlanERewarded(taskToPerform,taskIfNotRewarded);
+//        }
+//
+//    }
+//
+//    public void goToPlanERewarded(Callable<Void> taskToPerform,Callable<Void> taskIfNotRewarded) {
+//        if (adsPrefernce.showisRewarded()) {
+//            if (!isIsInter1Shown) {
+//                if (isIsInter1Ready) {
+//                    if (IronSource.isRewardedVideoAvailable()) {
+//                        IronSource.showRewardedVideo();
+//                        IronSource.setRewardedVideoListener(new RewardedVideoListener() {
+//                            @Override
+//                            public void onRewardedVideoAdOpened() {
+//
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdClosed() {
+//                                if (isIsUserRewarded) {
+//                                    try {
+//                                        taskToPerform.call();
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    isIsRewardedReady = false;
+//                                    isIsRewardedShown = true;
+//                                    isIsUserRewarded = false;
+//                                    IronSource.setRewardedVideoListener(isRewardedVideoListener);
+//                                    IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
+//                                    resetAllRewardedShownBoolean();
+//                                } else {
+//                                    try {
+//                                        taskIfNotRewarded.call();
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    isIsRewardedReady = false;
+//                                    isIsRewardedShown = true;
+//                                    isIsUserRewarded = false;
+//                                    IronSource.setRewardedVideoListener(isRewardedVideoListener);
+//                                    IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
+//                                    resetAllRewardedShownBoolean();
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAvailabilityChanged(boolean b) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdStarted() {
+//
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdEnded() {
+//
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdRewarded(Placement placement) {
+//                                isIsUserRewarded = true;
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdShowFailed(IronSourceError ironSourceError) {
+//                                isIsRewardedReady = false;
+//                                isIsRewardedShown = true;
+//                                isIsUserRewarded = false;
+//                                IronSource.setRewardedVideoListener(isRewardedVideoListener);
+//                                IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
+//                                resetAllRewardedShownBoolean();
+//                            }
+//
+//                            @Override
+//                            public void onRewardedVideoAdClicked(Placement placement) {
+//
+//                            }
+//                        });
+//                    } else {
+//                        resetAllRewardedShownBoolean();
+//                    }
+//                } else {
+//                    resetAllRewardedShownBoolean();
+//                }
+//            } else {
+//                resetAllRewardedShownBoolean();
+//            }
+//        } else {
+//            resetAllRewardedShownBoolean();
+//        }
+//
+//    }
+//
+//    public void resetAllRewardedShownBoolean() {
+//        isGRewardedShown = false;
+//        isFbRewardedShown = false;
+//        isImRewardedShown = false;
+//        isIsRewardedShown = false;
+//    }
 
 
     @Override
