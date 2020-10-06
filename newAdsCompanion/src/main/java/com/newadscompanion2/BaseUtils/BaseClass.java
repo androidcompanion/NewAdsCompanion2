@@ -1724,7 +1724,7 @@ public class BaseClass extends AppCompatActivity {
                             @Override
                             public void onAdFailedToLoad(LoadAdError loadAdError) {
                                 super.onAdFailedToLoad(loadAdError);
-                                Log.e("bannerFailed:",String.valueOf(loadAdError));
+                                Log.e("bannerFailed:",loadAdError.getMessage().toString());
                             }
                         });
                     } else if (adsPrefernce.showfbBanner()) {
