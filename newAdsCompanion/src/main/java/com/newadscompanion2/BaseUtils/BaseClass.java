@@ -1720,6 +1720,12 @@ public class BaseClass extends AppCompatActivity {
                                     getResources().getDrawable(R.drawable.bg_banner).setTint(defaultIds.TINT_COLOR());
                                 }
                             }
+
+                            @Override
+                            public void onAdFailedToLoad(LoadAdError loadAdError) {
+                                super.onAdFailedToLoad(loadAdError);
+                                Log.e("bannerFailed:",String.valueOf(loadAdError));
+                            }
                         });
                     } else if (adsPrefernce.showfbBanner()) {
                         com.facebook.ads.AdView adView;
