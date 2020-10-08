@@ -2126,7 +2126,7 @@ public class BaseClass extends AppCompatActivity {
             }
         });
     }
-    public AdView showGBannerAdpater() {
+    public View showGBannerAdpater() {
         AdView adview = null;
         if (isNetworkAvailable(this)){
             if (isAdsAvailable){
