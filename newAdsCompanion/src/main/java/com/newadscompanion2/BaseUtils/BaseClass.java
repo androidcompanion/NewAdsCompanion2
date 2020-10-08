@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -1679,6 +1680,8 @@ public class BaseClass extends AppCompatActivity {
     public static boolean isImBannerShown = false;
     public static boolean isIsBannerShown = false;
 
+
+
     public void destroyIsBanner() {
         if (isNetworkAvailable(this)) {
             if (isAdsAvailable) {
@@ -1693,6 +1696,9 @@ public class BaseClass extends AppCompatActivity {
     }
 
     public IronSourceBannerLayout banner;
+
+    public void showBannerAdForAdapter() {
+    }
 
     public void showBannerAd(Integer top, Integer bottom) {
         if (isNetworkAvailable(this)) {
@@ -2119,6 +2125,28 @@ public class BaseClass extends AppCompatActivity {
                 showFbBanner(top, bottom);
             }
         });
+    }
+    public AdView showGBannerAdpater() {
+        AdView adview = null;
+        if (isNetworkAvailable(this)){
+            if (isAdsAvailable){
+                if (adsPrefernce.showgBanner()){
+
+                    adview = new AdView(this);
+                    adview.setAdSize(AdSize.BANNER);
+                    adview.setAdUnitId(adsPrefernce.gBannerId());
+                    float density = getResources().getDisplayMetrics().density;
+                    int height = Math.round(AdSize.BANNER.getHeight() * density);
+                    AbsListView.LayoutParams params = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, height);
+                    adview.setLayoutParams(params);
+                    AdRequest request = new AdRequest.Builder().build();
+                    adview.loadAd(request);
+
+                }
+            }
+        }
+        return adview;
+
     }
 
     public void toast(String text) {
