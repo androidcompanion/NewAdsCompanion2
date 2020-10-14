@@ -1449,7 +1449,6 @@ public class BaseClass extends AppCompatActivity {
                             ads.getSaAdCount()
                     );
 
-                    loadRewardAd();
 
 //                    initializeMoPubSDKforInter1(adsPrefernce.mpInterId1(), false);
 //                    initializeMoPubSDKforInter2(adsPrefernce.mpInterId2(), false);
@@ -1491,6 +1490,9 @@ public class BaseClass extends AppCompatActivity {
                     }
 
                     isAdsAvailable = true;
+
+                    loadRewardAd();
+
 
                 }
 
