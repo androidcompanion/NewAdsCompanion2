@@ -2721,6 +2721,7 @@ public class BaseClass extends AppCompatActivity {
                                     gInterstitial1.show();
                                     gInterstitial1.setAdListener(new com.google.android.gms.ads.AdListener() {
                                         public void onAdClosed() {
+                                            super.onAdClosed();
                                             Log.e("Ads...", "g Inter 1 dismissed");
                                             MobileAds.initialize(getApplicationContext(), adsPrefernce.gAppId());
                                             gInterstitial1 = new com.google.android.gms.ads.InterstitialAd(BaseClass.this);
@@ -3183,6 +3184,7 @@ public class BaseClass extends AppCompatActivity {
                             gInterstitial2.show();
                             gInterstitial2.setAdListener(new com.google.android.gms.ads.AdListener() {
                                 public void onAdClosed() {
+                                    super.onAdClosed();
                                     Log.e("Ads...", "g Inter 2 dismissed");
                                     MobileAds.initialize(getApplicationContext(), adsPrefernce.gAppId());
                                     gInterstitial2 = new com.google.android.gms.ads.InterstitialAd(BaseClass.this);
