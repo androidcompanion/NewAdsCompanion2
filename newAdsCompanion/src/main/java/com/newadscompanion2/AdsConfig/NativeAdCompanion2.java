@@ -72,8 +72,8 @@ public class NativeAdCompanion2 {
             if (isAdsAvailable) {
                 if (!adsPrefernce.isMediationActive()) {
                     if (adsPrefernce.showgNative2()) {
-                        MobileAds.initialize(context, defaultIds.GOOGLE_APP_ID());
-                        builder = new AdLoader.Builder(this.context, defaultIds.GOOGLE_NATIVE2());
+                        MobileAds.initialize(context, adsPrefernce.gAppId());
+                        builder = new AdLoader.Builder(this.context, adsPrefernce.gNativeId2());
                         builder.forUnifiedNativeAd(new OnUnifiedNativeAdLoadedListener() {
                             public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
                                 NativeAdCompanion2.this.inflateNativeAdGoogle(unifiedNativeAd, cardView);
@@ -100,7 +100,7 @@ public class NativeAdCompanion2 {
                         }).build().loadAd(new Builder().build());
                     } else if (adsPrefernce.showfbNative2()) {
                         final NativeAd nativeAd;
-                        nativeAd = new NativeAd(context, defaultIds.FB_NATIVE2());
+                        nativeAd = new NativeAd(context, adsPrefernce.fbNativeId2());
                         nativeAd.setAdListener(new NativeAdListener() {
                             @Override
                             public void onMediaDownloaded(Ad ad) {
@@ -149,7 +149,7 @@ public class NativeAdCompanion2 {
 
             } else {
                 final NativeAd nativeAd;
-                nativeAd = new NativeAd(context, defaultIds.FB_NATIVE2());
+                nativeAd = new NativeAd(context, adsPrefernce.fbNativeId2());
                 nativeAd.setAdListener(new NativeAdListener() {
                     @Override
                     public void onMediaDownloaded(Ad ad) {
@@ -281,8 +281,8 @@ public class NativeAdCompanion2 {
     }
 
     public void showGNative1(final CardView cardView, final CardView nativeAdContainer) {
-        MobileAds.initialize(context, defaultIds.GOOGLE_APP_ID());
-        builder = new AdLoader.Builder(this.context, defaultIds.GOOGLE_NATIVE1());
+        MobileAds.initialize(context, adsPrefernce.gAppId());
+        builder = new AdLoader.Builder(this.context, adsPrefernce.gNativeId1());
         builder.forUnifiedNativeAd(new OnUnifiedNativeAdLoadedListener() {
             public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
                 NativeAdCompanion2.this.inflateNativeAdGoogle(unifiedNativeAd, cardView);
@@ -316,7 +316,7 @@ public class NativeAdCompanion2 {
         if (adsPrefernce.showfbNative1()) {
             if (!isFbN1Shown) {
                 final NativeAd nativeAd;
-                nativeAd = new NativeAd(context, defaultIds.FB_NATIVE1());
+                nativeAd = new NativeAd(context, adsPrefernce.fbNativeId1());
                 nativeAd.setAdListener(new NativeAdListener() {
                     @Override
                     public void onMediaDownloaded(Ad ad) {
@@ -363,8 +363,8 @@ public class NativeAdCompanion2 {
 
         if (adsPrefernce.showgNative2()) {
             if (!isGN2Shown) {
-                MobileAds.initialize(context, defaultIds.GOOGLE_APP_ID());
-                builder = new AdLoader.Builder(this.context, defaultIds.GOOGLE_NATIVE2());
+                MobileAds.initialize(context, adsPrefernce.gAppId());
+                builder = new AdLoader.Builder(this.context, adsPrefernce.gNativeId2());
                 builder.forUnifiedNativeAd(new OnUnifiedNativeAdLoadedListener() {
                     public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
                         NativeAdCompanion2.this.inflateNativeAdGoogle(unifiedNativeAd, cardView);
@@ -406,7 +406,7 @@ public class NativeAdCompanion2 {
         if (adsPrefernce.showfbNative2()) {
             if (!isFbN2Shown) {
                 final NativeAd nativeAd;
-                nativeAd = new NativeAd(context, defaultIds.FB_NATIVE2());
+                nativeAd = new NativeAd(context, adsPrefernce.fbNativeId2());
                 nativeAd.setAdListener(new NativeAdListener() {
                     @Override
                     public void onMediaDownloaded(Ad ad) {
