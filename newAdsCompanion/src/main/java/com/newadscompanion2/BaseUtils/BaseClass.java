@@ -4620,6 +4620,7 @@ public class BaseClass extends AppCompatActivity {
                             gInterstitial11.show();
                             gInterstitial11.setAdListener(new com.google.android.gms.ads.AdListener() {
                                 public void onAdClosed() {
+                                    super.onAdClosed();
                                     if (loadOnClosed) {
                                         loadInterstitial1();
                                     }
