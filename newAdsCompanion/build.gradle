@@ -43,7 +43,7 @@ dependencies {
     implementation 'com.facebook.android:audience-network-sdk:5.11.0'
 
     //google
-    implementation 'com.google.android.gms:play-services-ads:19.3.0'
+    implementation 'com.google.android.gms:play-services-ads:19.4.0'
 
     //app next
 //    implementation 'com.appnext.sdk:ads:2.5.1.472'
