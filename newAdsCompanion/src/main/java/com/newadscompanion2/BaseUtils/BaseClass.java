@@ -1491,8 +1491,6 @@ public class BaseClass extends AppCompatActivity {
 
                     isAdsAvailable = true;
 
-                    loadRewardAd();
-
 
                 }
 
