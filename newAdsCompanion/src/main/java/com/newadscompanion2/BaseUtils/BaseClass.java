@@ -5006,6 +5006,7 @@ public class BaseClass extends AppCompatActivity {
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
+                                            loadInterstitial1();
                                         }
 
                                         @Override
@@ -5173,6 +5174,7 @@ public class BaseClass extends AppCompatActivity {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
+                                loadInterstitial1();
                             }
 
                             @Override
@@ -5276,6 +5278,7 @@ public class BaseClass extends AppCompatActivity {
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
+                                            loadInterstitial2();
                                         }
 
                                         @Override
@@ -5442,6 +5445,8 @@ public class BaseClass extends AppCompatActivity {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
+                                loadInterstitial2();
+
                             }
 
                             @Override
