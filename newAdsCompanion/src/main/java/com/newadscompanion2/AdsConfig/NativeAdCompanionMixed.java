@@ -15,7 +15,6 @@ import androidx.cardview.widget.CardView;
 
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
-import com.facebook.ads.AdIconView;
 import com.facebook.ads.AdOptionsView;
 import com.facebook.ads.NativeAd;
 import com.facebook.ads.NativeAdLayout;
@@ -94,7 +93,7 @@ public class NativeAdCompanionMixed {
             } else {
                 final NativeAd nativeAd;
                 nativeAd = new NativeAd(context, adsPrefernce.fbNativeId1());
-                nativeAd.setAdListener(new NativeAdListener() {
+                NativeAdListener nativeAdListener = new NativeAdListener() {
                     @Override
                     public void onMediaDownloaded(Ad ad) {
                     }
@@ -123,8 +122,8 @@ public class NativeAdCompanionMixed {
                         nativeAdContainer.setVisibility(View.VISIBLE);
                         cardView.setVisibility(View.VISIBLE);
                     }
-                });
-                nativeAd.loadAd();
+                };
+                nativeAd.loadAd(nativeAd.buildLoadAdConfig().withAdListener(nativeAdListener).build());
             }
         }
     }
@@ -166,7 +165,7 @@ public class NativeAdCompanionMixed {
             if (!isFbN1Shown) {
                 final NativeAd nativeAd;
                 nativeAd = new NativeAd(context, adsPrefernce.fbNativeId1());
-                nativeAd.setAdListener(new NativeAdListener() {
+                NativeAdListener nativeAdListener = new NativeAdListener() {
                     @Override
                     public void onMediaDownloaded(Ad ad) {
                     }
@@ -198,8 +197,8 @@ public class NativeAdCompanionMixed {
                         nativeAdContainer.setVisibility(View.VISIBLE);
                         cardView.setVisibility(View.VISIBLE);
                     }
-                });
-                nativeAd.loadAd();
+                };
+                nativeAd.loadAd(nativeAd.buildLoadAdConfig().withAdListener(nativeAdListener).build());
             } else {
                 showGNative2(cardView, nativeAdContainer);
             }
@@ -257,7 +256,7 @@ public class NativeAdCompanionMixed {
             if (!isFbN2Shown) {
                 final NativeAd nativeAd;
                 nativeAd = new NativeAd(context, adsPrefernce.fbNativeId2());
-                nativeAd.setAdListener(new NativeAdListener() {
+                NativeAdListener nativeAdListener = new NativeAdListener() {
                     @Override
                     public void onMediaDownloaded(Ad ad) {
                     }
@@ -298,8 +297,8 @@ public class NativeAdCompanionMixed {
                         nativeAdContainer.setVisibility(View.VISIBLE);
                         cardView.setVisibility(View.VISIBLE);
                     }
-                });
-                nativeAd.loadAd();
+                };
+                nativeAd.loadAd(nativeAd.buildLoadAdConfig().withAdListener(nativeAdListener).build());
             } else {
                 resetNativeShownBoolean();
                 if (adsPrefernce.showgNative1()) {
@@ -405,7 +404,7 @@ public class NativeAdCompanionMixed {
         adChoicesContainer.addView(adOptionsView, 0);
 
         // Create native UI using the ad metadata.
-        AdIconView nativeAdIcon = adViews.findViewById(R.id.native_ad_icon);
+        com.facebook.ads.MediaView nativeAdIcon = adViews.findViewById(R.id.native_ad_icon);
         TextView nativeAdTitle = adViews.findViewById(R.id.native_ad_title);
         com.facebook.ads.MediaView nativeAdMedia = adViews.findViewById(R.id.native_ad_media);
         TextView nativeAdSocialContext = adViews.findViewById(R.id.native_ad_social_context);

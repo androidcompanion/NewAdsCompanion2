@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
-import com.facebook.ads.AdIconView;
 import com.facebook.ads.AdOptionsView;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAdLayout;
@@ -79,7 +78,8 @@ public class FBNativeAdsAdapter extends RecyclerViewAdapterWrapper {
         if (mParam.forceReloadAdOnBind || !adHolder.loaded) {
 
             final com.facebook.ads.NativeAd nativeAd = new com.facebook.ads.NativeAd(adHolder.getContext(), mParam.facebookPlacementId);
-            nativeAd.setAdListener(new NativeAdListener() {
+
+            NativeAdListener nativeAdListener = new NativeAdListener() {
                 @Override
                 public void onMediaDownloaded(Ad ad) {
 
@@ -127,8 +127,8 @@ public class FBNativeAdsAdapter extends RecyclerViewAdapterWrapper {
                 public void onLoggingImpression(Ad ad) {
 
                 }
-            });
-            nativeAd.loadAd();
+            };
+            nativeAd.loadAd(nativeAd.buildLoadAdConfig().withAdListener(nativeAdListener).build());
         }
     }
 
@@ -239,7 +239,7 @@ public class FBNativeAdsAdapter extends RecyclerViewAdapterWrapper {
     }
 
     private static class AdViewHolder extends RecyclerView.ViewHolder {
-        AdIconView nativeAdIcon;
+        MediaView nativeAdIcon;
         TextView nativeAdTitle;
         MediaView nativeAdMedia;
         TextView nativeAdSocialContext;
