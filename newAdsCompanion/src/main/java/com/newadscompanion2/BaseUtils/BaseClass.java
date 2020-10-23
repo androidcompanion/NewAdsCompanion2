@@ -4526,6 +4526,41 @@ public class BaseClass extends AppCompatActivity {
                     } else if (adsPrefernce.showfbInter2()) {
                         if (fbInterstitial22.isAdLoaded()) {
                             fbInterstitial22.show();
+                            InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
+                                @Override
+                                public void onInterstitialDisplayed(Ad ad) {
+
+                                }
+
+                                @Override
+                                public void onInterstitialDismissed(Ad ad) {
+                                    if(loadOnClosed){
+                                        loadInterstitial2();
+                                    }
+
+                                }
+
+                                @Override
+                                public void onError(Ad ad, AdError adError) {
+
+                                }
+
+                                @Override
+                                public void onAdLoaded(Ad ad) {
+
+                                }
+
+                                @Override
+                                public void onAdClicked(Ad ad) {
+
+                                }
+
+                                @Override
+                                public void onLoggingImpression(Ad ad) {
+
+                                }
+                            };
+                            fbInterstitial22.buildLoadAdConfig().withAdListener(interstitialAdListener).build();
 
                         }
 
@@ -4558,6 +4593,41 @@ public class BaseClass extends AppCompatActivity {
         } else {
             if (fbInterstitial22.isAdLoaded()) {
                 fbInterstitial22.show();
+                InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
+                    @Override
+                    public void onInterstitialDisplayed(Ad ad) {
+
+                    }
+
+                    @Override
+                    public void onInterstitialDismissed(Ad ad) {
+                        if(loadOnClosed){
+                            loadInterstitial2();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Ad ad, AdError adError) {
+
+                    }
+
+                    @Override
+                    public void onAdLoaded(Ad ad) {
+
+                    }
+
+                    @Override
+                    public void onAdClicked(Ad ad) {
+
+                    }
+
+                    @Override
+                    public void onLoggingImpression(Ad ad) {
+
+                    }
+                };
+                fbInterstitial22.buildLoadAdConfig().withAdListener(interstitialAdListener).build();
             }
 
 
@@ -4593,6 +4663,42 @@ public class BaseClass extends AppCompatActivity {
 
                             if (fbInterstitial11.isAdLoaded()) {
                                 fbInterstitial11.show();
+                                InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
+                                    @Override
+                                    public void onInterstitialDisplayed(Ad ad) {
+
+                                    }
+
+                                    @Override
+                                    public void onInterstitialDismissed(Ad ad) {
+                                        if(loadOnClosed){
+                                            loadInterstitial1();
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onError(Ad ad, AdError adError) {
+
+                                    }
+
+                                    @Override
+                                    public void onAdLoaded(Ad ad) {
+
+                                    }
+
+                                    @Override
+                                    public void onAdClicked(Ad ad) {
+
+                                    }
+
+                                    @Override
+                                    public void onLoggingImpression(Ad ad) {
+
+                                    }
+                                };
+                                fbInterstitial11.buildLoadAdConfig().withAdListener(interstitialAdListener).build();
+
                             }
 
 
@@ -4661,6 +4767,41 @@ public class BaseClass extends AppCompatActivity {
             } else {
                 if (fbInterstitial11.isAdLoaded()) {
                     fbInterstitial11.show();
+                    InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
+                        @Override
+                        public void onInterstitialDisplayed(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onInterstitialDismissed(Ad ad) {
+                            if(loadOnClosed){
+                                loadInterstitial1();
+                            }
+
+                        }
+
+                        @Override
+                        public void onError(Ad ad, AdError adError) {
+
+                        }
+
+                        @Override
+                        public void onAdLoaded(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onAdClicked(Ad ad) {
+
+                        }
+
+                        @Override
+                        public void onLoggingImpression(Ad ad) {
+
+                        }
+                    };
+                    fbInterstitial11.buildLoadAdConfig().withAdListener(interstitialAdListener).build();
                 }
 
 

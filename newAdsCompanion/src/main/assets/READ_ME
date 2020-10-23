@@ -44,6 +44,7 @@ Plan Selection on server doesn't matter in Reward Ads(IN MEDIATION)
 V1.1.10
 Reaward ads auto loading removed from baseclass
 Facebook sdk updated to 6.1.0
+Facebook Ad Listner Added and AdIconView Replaced
 
 V1.1.9
 deleted
