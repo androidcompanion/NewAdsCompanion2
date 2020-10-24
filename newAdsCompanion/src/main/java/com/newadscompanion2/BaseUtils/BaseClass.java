@@ -455,6 +455,11 @@ public class BaseClass extends AppCompatActivity {
                                         gRewardedAd = new RewardedAd(BaseClass.this,
                                                 adsPrefernce.gRewardedId());
                                         gRewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+                                        try {
+                                            onRewardAdClosedListener.onRewardAdNotShown();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 };
                                 gRewardedAd.show(this, adCallback);
@@ -500,6 +505,11 @@ public class BaseClass extends AppCompatActivity {
                                     fbRewardedVideoAd.buildLoadAdConfig()
                                             .withAdListener(rewardedVideoAdListener)
                                             .build());
+                            try {
+                                onRewardAdClosedListener.onRewardAdNotShown();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
 
                         @Override
@@ -610,6 +620,11 @@ public class BaseClass extends AppCompatActivity {
                                 isImUserRewarded = false;
                                 imRewardedAd = new InMobiInterstitial(BaseClass.this, Long.parseLong(defaultIds.IM_REWARDED()), mRewardAdEventListener);
                                 imRewardedAd.load();
+                                try {
+                                    onRewardAdClosedListener.onRewardAdNotShown();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             @Override
@@ -731,6 +746,11 @@ public class BaseClass extends AppCompatActivity {
                                 IronSource.setRewardedVideoListener(isRewardedVideoListener);
                                 IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
                                 resetAllRewardedShownBoolean();
+                                try {
+                                    onRewardAdClosedListener.onRewardAdNotShown();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             @Override
@@ -758,6 +778,11 @@ public class BaseClass extends AppCompatActivity {
         isFbRewardedShown = false;
         isImRewardedShown = false;
         isIsRewardedShown = false;
+        try {
+            onRewardAdClosedListener.onRewardAdNotShown();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
