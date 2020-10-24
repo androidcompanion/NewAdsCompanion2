@@ -406,6 +406,8 @@ public class BaseClass extends AppCompatActivity {
                                         // Ad opened.
                                     }
 
+
+
                                     @Override
                                     public void onRewardedAdClosed() {
                                         Log.d("RewardAds...", "onRewardedAdClosed Google");
@@ -774,13 +776,17 @@ public class BaseClass extends AppCompatActivity {
     }
 
     public void resetAllRewardedShownBoolean() {
+        Log.e("RewardAds...", "ALL BOOLEAN SET FALSE: ");
+
         isGRewardedShown = false;
         isFbRewardedShown = false;
         isImRewardedShown = false;
         isIsRewardedShown = false;
         try {
+            Log.e("RewardAds...", "onRewardAdNotShown TRY ");
             onRewardAdClosedListener.onRewardAdNotShown();
         } catch (Exception e) {
+            Log.e("RewardAds...", "onRewardAdNotShown CATCH ");
             e.printStackTrace();
         }
     }
