@@ -704,7 +704,7 @@ public class BaseClass extends AppCompatActivity {
                                     isIsUserRewarded = false;
                                     IronSource.setRewardedVideoListener(isRewardedVideoListener);
                                     IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
-                                    resetAllRewardedShownBoolean();
+                                    resetAllRewardedShownBoolean(onRewardAdClosedListener);
                                 } else {
                                     try {
                                         onRewardAdClosedListener.onRewardFailed();
@@ -716,7 +716,7 @@ public class BaseClass extends AppCompatActivity {
                                     isIsUserRewarded = false;
                                     IronSource.setRewardedVideoListener(isRewardedVideoListener);
                                     IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
-                                    resetAllRewardedShownBoolean();
+                                    resetAllRewardedShownBoolean(onRewardAdClosedListener);
                                 }
                             }
 
@@ -747,7 +747,7 @@ public class BaseClass extends AppCompatActivity {
                                 isIsUserRewarded = false;
                                 IronSource.setRewardedVideoListener(isRewardedVideoListener);
                                 IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
-                                resetAllRewardedShownBoolean();
+                                resetAllRewardedShownBoolean(onRewardAdClosedListener);
                                 try {
                                     onRewardAdClosedListener.onRewardAdNotShown();
                                 } catch (Exception e) {
@@ -761,21 +761,21 @@ public class BaseClass extends AppCompatActivity {
                             }
                         });
                     } else {
-                        resetAllRewardedShownBoolean();
+                        resetAllRewardedShownBoolean(onRewardAdClosedListener);
                     }
                 } else {
-                    resetAllRewardedShownBoolean();
+                    resetAllRewardedShownBoolean(onRewardAdClosedListener);
                 }
             } else {
-                resetAllRewardedShownBoolean();
+                resetAllRewardedShownBoolean(onRewardAdClosedListener);
             }
         } else {
-            resetAllRewardedShownBoolean();
+            resetAllRewardedShownBoolean(onRewardAdClosedListener);
         }
 
     }
 
-    public void resetAllRewardedShownBoolean() {
+    public void resetAllRewardedShownBoolean(OnRewardAdClosedListener onRewardAdClosedListener) {
         Log.e("RewardAds...", "ALL BOOLEAN SET FALSE: ");
 
         isGRewardedShown = false;
