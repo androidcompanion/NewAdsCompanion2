@@ -45,6 +45,7 @@ V1.1.10
 Reaward ads auto loading removed from baseclass
 Facebook sdk updated to 6.1.0
 Facebook Ad Listner Added and AdIconView Replaced
+showInter1,2OnClosed bug fixed for im and is(onclosed pr reload kri)
 
 V1.1.9
 deleted
