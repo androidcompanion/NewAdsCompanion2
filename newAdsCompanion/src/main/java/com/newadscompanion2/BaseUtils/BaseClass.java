@@ -704,7 +704,7 @@ public class BaseClass extends AppCompatActivity {
                                     isIsUserRewarded = false;
                                     IronSource.setRewardedVideoListener(isRewardedVideoListener);
                                     IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
-                                    resetAllRewardedShownBoolean(onRewardAdClosedListener);
+                                    resetAllRewardedShownBoolean(false,onRewardAdClosedListener);
                                 } else {
                                     try {
                                         onRewardAdClosedListener.onRewardFailed();
@@ -716,7 +716,7 @@ public class BaseClass extends AppCompatActivity {
                                     isIsUserRewarded = false;
                                     IronSource.setRewardedVideoListener(isRewardedVideoListener);
                                     IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
-                                    resetAllRewardedShownBoolean(onRewardAdClosedListener);
+                                    resetAllRewardedShownBoolean(false,onRewardAdClosedListener);
                                 }
                             }
 
@@ -747,7 +747,7 @@ public class BaseClass extends AppCompatActivity {
                                 isIsUserRewarded = false;
                                 IronSource.setRewardedVideoListener(isRewardedVideoListener);
                                 IronSource.init(BaseClass.this, defaultIds.IS_APP_KEY(), IronSource.AD_UNIT.REWARDED_VIDEO);
-                                resetAllRewardedShownBoolean(onRewardAdClosedListener);
+                                resetAllRewardedShownBoolean(false,onRewardAdClosedListener);
                                 try {
                                     onRewardAdClosedListener.onRewardAdNotShown();
                                 } catch (Exception e) {
@@ -761,34 +761,37 @@ public class BaseClass extends AppCompatActivity {
                             }
                         });
                     } else {
-                        resetAllRewardedShownBoolean(onRewardAdClosedListener);
+                        resetAllRewardedShownBoolean(true,onRewardAdClosedListener);
                     }
                 } else {
-                    resetAllRewardedShownBoolean(onRewardAdClosedListener);
+                    resetAllRewardedShownBoolean(true,onRewardAdClosedListener);
                 }
             } else {
-                resetAllRewardedShownBoolean(onRewardAdClosedListener);
+                resetAllRewardedShownBoolean(true,onRewardAdClosedListener);
             }
         } else {
-            resetAllRewardedShownBoolean(onRewardAdClosedListener);
+            resetAllRewardedShownBoolean(true,onRewardAdClosedListener);
         }
 
     }
 
-    public void resetAllRewardedShownBoolean(OnRewardAdClosedListener onRewardAdClosedListener) {
+    public void resetAllRewardedShownBoolean(Boolean withListner,OnRewardAdClosedListener onRewardAdClosedListener) {
         Log.e("RewardAds...", "ALL BOOLEAN SET FALSE: ");
 
         isGRewardedShown = false;
         isFbRewardedShown = false;
         isImRewardedShown = false;
         isIsRewardedShown = false;
-        try {
-            Log.e("RewardAds...", "onRewardAdNotShown TRY ");
-            onRewardAdClosedListener.onRewardAdNotShown();
-        } catch (Exception e) {
-            Log.e("RewardAds...", "onRewardAdNotShown CATCH ");
-            e.printStackTrace();
+        if (withListner){
+            try {
+                Log.e("RewardAds...", "onRewardAdNotShown TRY ");
+                onRewardAdClosedListener.onRewardAdNotShown();
+            } catch (Exception e) {
+                Log.e("RewardAds...", "onRewardAdNotShown CATCH ");
+                e.printStackTrace();
+            }
         }
+
     }
 
 
@@ -4386,7 +4389,6 @@ public class BaseClass extends AppCompatActivity {
                                         super.onAdLoadFailed(inMobiInterstitial, inMobiAdRequestStatus);
                                     }
                                 });
-//                            inMobiInterstitial11 = new InMobiInterstitial(this, Long.parseLong(defaultIds.IM_INTER1()), mInterstitialAdEventListener);
                                 inMobiInterstitial11.load();
                             }
 
@@ -5101,6 +5103,7 @@ public class BaseClass extends AppCompatActivity {
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
+                                        loadInterstitial1();
                                     }
                                 });
                             } else {
@@ -5146,6 +5149,7 @@ public class BaseClass extends AppCompatActivity {
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
+                                        loadInterstitial1();
                                     }
 
                                     @Override
@@ -5372,6 +5376,7 @@ public class BaseClass extends AppCompatActivity {
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
+                                        loadInterstitial2();
                                     }
                                 });
                             } else {
@@ -5417,6 +5422,7 @@ public class BaseClass extends AppCompatActivity {
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
+                                        loadInterstitial2();
                                     }
 
                                     @Override
