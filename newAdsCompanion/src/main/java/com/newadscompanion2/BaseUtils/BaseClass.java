@@ -77,7 +77,9 @@ import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.newadscompanion2.AdsConfig.DefaultIds;
+import com.newadscompanion2.BroadcastUtils.NetworkStateReceiver;
 import com.newadscompanion2.Interfaces.OnCheckServiceListner;
+import com.newadscompanion2.Interfaces.OnNetworkChangeListner;
 import com.newadscompanion2.Interfaces.OnPlayVerificationFailed;
 import com.newadscompanion2.Interfaces.OnRewardAdClosedListener;
 import com.newadscompanion2.ModelsCompanion.AdsData;
@@ -98,7 +100,7 @@ import java.util.concurrent.Callable;
 
 import cz.msebera.android.httpclient.Header;
 
-public class BaseClass extends AppCompatActivity {
+public class BaseClass extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
 
 
     public RelativeLayout lay_notification;
@@ -208,6 +210,7 @@ public class BaseClass extends AppCompatActivity {
     public static boolean isvalidInstall = false;
 
     public static boolean inMobiInitialized = false;
+    OnNetworkChangeListner onNetworkChangeListner;
 
     public void loadRewardAd() {
         adsPrefernce = new AdsPrefernce(this);
@@ -1349,6 +1352,9 @@ public class BaseClass extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        onNetworkChangeListner = (OnNetworkChangeListner)this;
+
         progressDialog = new ProgressDialog(this);
         defaultIds = new DefaultIds(this);
         adsPrefernce = new AdsPrefernce(this);
@@ -1492,6 +1498,7 @@ public class BaseClass extends AppCompatActivity {
                             ads.getSaAdCount()
                     );
 
+                    onNetworkChangeListner.onAdDataDownloaded();
 
 //                    initializeMoPubSDKforInter1(adsPrefernce.mpInterId1(), false);
 //                    initializeMoPubSDKforInter2(adsPrefernce.mpInterId2(), false);
@@ -6492,4 +6499,23 @@ public class BaseClass extends AppCompatActivity {
 
     }
 
+    @Override
+    public void networkAvailable( ) {
+        if (isNetworkAvailable(BaseClass.this)) {
+            if (!isAdsAvailable) {
+                getAds(defaultIds.APP_KEY());
+            }
+        }
+
+        onNetworkChangeListner = (OnNetworkChangeListner)this;
+        onNetworkChangeListner.onInternetConnected();
+
+
+    }
+
+    @Override
+    public void networkUnavailable( ) {
+        onNetworkChangeListner = (OnNetworkChangeListner)this;
+        onNetworkChangeListner.onInternetDisconnected();
+    }
 }
