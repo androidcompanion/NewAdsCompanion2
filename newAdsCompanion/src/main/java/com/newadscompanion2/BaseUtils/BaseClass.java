@@ -1443,6 +1443,14 @@ public class BaseClass extends AppCompatActivity {
 
                     adsList.clear();
                     adsList = new ArrayList<>();
+                    if (response == null) {
+                        isAdsAvailable = true;
+                        if (adsPrefernce.isMediationActive()) {
+                            loadMixedInterAds();
+                        }
+                        return;
+                    }
+
 
                     if (response.getSuccess() == 0) {
                         Log.e("Ads...", "Success = 0");
@@ -1551,7 +1559,6 @@ public class BaseClass extends AppCompatActivity {
             });
 
         } catch (Exception ignored) {
-            toast("calling get ads in catch...");
 
         }
 
@@ -4371,7 +4378,36 @@ public class BaseClass extends AppCompatActivity {
                             AudienceNetworkAds.initialize(this);
                             if (adsPrefernce.showfbInter1()) {
                                 fbInterstitial11 = new com.facebook.ads.InterstitialAd(this, adsPrefernce.fbInterId1());
-                                fbInterstitial11.loadAd();
+                                InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
+                                    @Override
+                                    public void onInterstitialDisplayed(Ad ad) {
+
+                                    }
+
+                                    @Override
+                                    public void onInterstitialDismissed(Ad ad) {
+                                    }
+
+                                    @Override
+                                    public void onError(Ad ad, AdError adError) {
+
+                                    }
+
+                                    @Override
+                                    public void onAdLoaded(Ad ad) {
+                                    }
+
+                                    @Override
+                                    public void onAdClicked(Ad ad) {
+
+                                    }
+
+                                    @Override
+                                    public void onLoggingImpression(Ad ad) {
+
+                                    }
+                                };
+                                fbInterstitial11.loadAd(fbInterstitial11.buildLoadAdConfig().withAdListener(interstitialAdListener).build());
                             }
                         }
                     } else if (adsPrefernce.planD()) {
@@ -4461,7 +4497,38 @@ public class BaseClass extends AppCompatActivity {
                         } else if (adsPrefernce.showfbInter2()) {
                             AudienceNetworkAds.initialize(this);
                             fbInterstitial22 = new com.facebook.ads.InterstitialAd(this, adsPrefernce.fbInterId2());
-                            fbInterstitial22.loadAd();
+                            InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
+                                @Override
+                                public void onInterstitialDisplayed(Ad ad) {
+
+                                }
+
+                                @Override
+                                public void onInterstitialDismissed(Ad ad) {
+
+                                }
+
+                                @Override
+                                public void onError(Ad ad, AdError adError) {
+
+                                }
+
+                                @Override
+                                public void onAdLoaded(Ad ad) {
+
+                                }
+
+                                @Override
+                                public void onAdClicked(Ad ad) {
+
+                                }
+
+                                @Override
+                                public void onLoggingImpression(Ad ad) {
+
+                                }
+                            };
+                            fbInterstitial22.loadAd(fbInterstitial22.buildLoadAdConfig().withAdListener(interstitialAdListener).build());
                         }
                     } else if (adsPrefernce.planD()) {
                         if (adsPrefernce.showimInter2()) {
