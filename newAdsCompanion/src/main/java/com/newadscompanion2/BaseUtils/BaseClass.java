@@ -686,8 +686,8 @@ public class BaseClass extends AppCompatActivity implements NetworkStateReceiver
 
     public void goToPlanERewarded(OnRewardAdClosedListener onRewardAdClosedListener) {
         if (adsPrefernce.showisRewarded()) {
-            if (!isIsInter1Shown) {
-                if (isIsInter1Ready) {
+            if (!isIsRewardedShown) {
+                if (isIsRewardedReady) {
                     if (IronSource.isRewardedVideoAvailable()) {
                         IronSource.showRewardedVideo();
                         IronSource.setRewardedVideoListener(new RewardedVideoListener() {

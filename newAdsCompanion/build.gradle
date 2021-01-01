@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.0"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         minSdkVersion 19
@@ -30,8 +30,8 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
-    testImplementation 'junit:junit:4.13'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
@@ -41,10 +41,10 @@ dependencies {
 
     // facebook
     implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'com.facebook.android:audience-network-sdk:6.1.0'
+    implementation 'com.facebook.android:audience-network-sdk:6.2.0'
 
     //google
-    implementation 'com.google.android.gms:play-services-ads:19.5.0'
+    implementation 'com.google.android.gms:play-services-ads:19.6.0'
 
     //app next
 //    implementation 'com.appnext.sdk:ads:2.5.1.472'

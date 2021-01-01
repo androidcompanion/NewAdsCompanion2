@@ -39,13 +39,26 @@ Reward Ads:
 Plan Selection on server doesn't matter in Reward Ads
 
 Banner Ads:
-Plan Selection on server doesn't matter in Reward Ads(IN MEDIATION)
+Plan Selection on server doesn't matter in Banner Ads(IN MEDIATION)
 
+V1.1.11
+11-12  aad1ca7777
+OnNetworkChange Listner Added
+resopnse validation added while hacking
+
+01-01-2021
+Facebook and google sdk updated
+
+
+
+---------------------------------------
 V1.1.10
 Reaward ads auto loading removed from baseclass
 Facebook sdk updated to 6.1.0
 Facebook Ad Listner Added and AdIconView Replaced
 showInter1,2OnClosed bug fixed for im and is(onclosed pr reload kri)
+
+
 
 V1.1.9
 deleted
